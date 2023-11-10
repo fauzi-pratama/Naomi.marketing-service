@@ -1,0 +1,10 @@
+{
+  "files.exclude": {
+    "Naomi.marketing-library\\bin": true,
+    "Naomi.marketing-library\\obj": true,
+    "Naomi.marketing-service\\bin": true,
+    "Naomi.marketing-service\\obj": true,
+    "Naomi.marketing-test\\bin": true,
+    "Naomi.marketing-test\\obj": true
+  }
+}
