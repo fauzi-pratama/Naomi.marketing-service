@@ -23,7 +23,7 @@ namespace Naomi.marketing_service.Models.Entities
         [Column("approver_id", Order = 3), MaxLength(50)]
         public string? ApproverId { get; set; }  //ini ada MasterTable-nya ga? kalo ada nanti diubah jadi FK
 
-        [Column("job_position",Order = 4), MaxLength(50)]
+        [Column("job_position",Order = 4), MaxLength(200)]
         public string? JobPosition { get; set; }
 
         [Column("approve", Order = 5)]

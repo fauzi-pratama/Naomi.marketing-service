@@ -16,7 +16,7 @@ namespace Naomi.marketing_service.Models.Entities
         public Guid? PromotionEntertainId { get; set; }
 
         [Required]
-        [Column("email", Order = 2), MaxLength(50)]
+        [Column("email", Order = 2), MaxLength(200)]
         public string? Email { get; set; }
 
         [Required]

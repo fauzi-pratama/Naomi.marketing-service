@@ -32,7 +32,7 @@ namespace Naomi.marketing_service.Models.Entities
         [Column("company_code", Order = 5), MaxLength(50)]
         public string? CompanyCode { get; set; }
 
-        [Column("company_name", Order = 6), MaxLength(50)]
+        [Column("company_name", Order = 6), MaxLength(200)]
         public string? CompanyName { get; set; }
 
 
@@ -43,7 +43,7 @@ namespace Naomi.marketing_service.Models.Entities
         public string? RedemptionCode { get; set; }
 
         [Required]
-        [Column("promotion_name", Order = 9), MaxLength(50)]
+        [Column("promotion_name", Order = 9), MaxLength(200)]
         public string? PromotionName { get; set; }
 
         /*ini sebenernya udah ga dipake*/
