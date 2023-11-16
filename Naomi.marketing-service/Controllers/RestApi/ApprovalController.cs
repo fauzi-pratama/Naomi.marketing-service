@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Naomi.marketing_service.Controllers
+namespace Naomi.marketing_service.Controllers.RestApi
 {
-    public class MasterDataController : Controller
+    public class ApprovalController : Controller
     {
         public IActionResult Index()
         {

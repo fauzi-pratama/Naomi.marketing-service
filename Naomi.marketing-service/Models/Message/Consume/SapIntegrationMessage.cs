@@ -1,6 +1,6 @@
 ﻿using Naomi.marketing_service.Models.Request.Sap;
 
-namespace Naomi.marketing_service.Models.Response.Sap
+namespace Naomi.marketing_service.Models.Message.Consume
 {
     public class SapIntegrationMessage : IntegrationMessageRequest
     {

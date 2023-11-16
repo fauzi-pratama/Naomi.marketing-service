@@ -1,6 +1,6 @@
-﻿namespace Naomi.marketing_service.Models.Message
+﻿namespace Naomi.marketing_service.Models.Message.Pub
 {
-    public class PromotionTypeUpdated
+    public class PromotionTypeCreated
     {
         public Guid Id { get; set; }
         public Guid PromotionClassId { get; set; }

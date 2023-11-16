@@ -1,4 +1,4 @@
-﻿using Naomi.marketing_service.Models.Message;
+﻿using Naomi.marketing_service.Models.Message.Publish;
 using static Naomi.marketing_service.Models.Request.PromotionDetailRequest;
 
 namespace Naomi.marketing_service.Models.Response

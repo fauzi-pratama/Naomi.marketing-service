@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Naomi.marketing_service.Controllers
+namespace Naomi.marketing_service.Controllers.RestApi
 {
-    public class PromotionController : Controller
+    public class InitialDataController : Controller
     {
         public IActionResult Index()
         {

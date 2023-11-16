@@ -1,4 +1,4 @@
-﻿namespace Naomi.marketing_service.Models.Message
+﻿namespace Naomi.marketing_service.Models.Message.Pub
 {
     public class PromotionClassUpdated
     {

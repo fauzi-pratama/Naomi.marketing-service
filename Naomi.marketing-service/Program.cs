@@ -27,7 +27,7 @@ builder.Services.AddCap(x =>
     x.UseKafka(opt =>
     {
         opt.Servers = appConfig.KafkaConnectionString!;
-        opt.CustomHeaders = kafkaResult => new List<KeyValuePair<string, string>>
+        opt.CustomHeaders! = kafkaResult => new List<KeyValuePair<string, string>>
         {
             new KeyValuePair<string, string>("cap-msg-id", Guid.NewGuid().ToString()),
             new KeyValuePair<string, string>("cap-msg-name", kafkaResult.Topic)

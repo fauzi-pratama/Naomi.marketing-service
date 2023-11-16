@@ -1,4 +1,4 @@
-﻿namespace Naomi.marketing_service.Models.Response.Sap
+﻿namespace Naomi.marketing_service.Models.Message.Consume
 {
     class MopPaymentApiResponse
     {
