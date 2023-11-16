@@ -21,10 +21,10 @@ namespace Naomi.marketing_service.Models.Entities
         [Column("mop_group_id", Order = 3)]
         public string? MopGroupId { get; set; }
 
-        [Column("mop_group_code", Order = 4)]
+        [Column("mop_group_code", Order = 4), MaxLength(50)]
         public string? MopGroupCode { get; set; }
 
-        [Column("mop_group_name", Order = 5)]
+        [Column("mop_group_name", Order = 5), MaxLength(200)]
         public string? MopGroupName { get; set; }
 
 

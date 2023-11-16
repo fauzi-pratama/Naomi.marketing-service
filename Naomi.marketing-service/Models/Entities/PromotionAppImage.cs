@@ -16,13 +16,13 @@ namespace Naomi.marketing_service.Models.Entities
         public Guid PromotionHeaderId { get; set; }
 
         [Required]
-        [Column("app_code", Order = 2), MaxLength(200)]
+        [Column("app_code", Order = 2), MaxLength(50)]
         public string? AppCode { get; set; }
 
         [Column("image_link", Order = 3), DataType("text")]
         public string? ImageLink { get; set; }
 
-        [Column("file_name", Order = 4), MaxLength(50)]
+        [Column("file_name", Order = 4), MaxLength(200)]
         public string? FileName { get; set; }
 
 
