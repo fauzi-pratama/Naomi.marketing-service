@@ -1,7 +1,9 @@
 
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Naomi.marketing_service.Configurations;
 using Naomi.marketing_service.Models.Contexts;
+using System.Reflection;
 
 //config App
 var builder = WebApplication.CreateBuilder(args);
@@ -29,12 +31,19 @@ builder.Services.AddCap(x =>
         opt.Servers = appConfig.KafkaConnectionString!;
         opt.CustomHeaders = kafkaResult => new List<KeyValuePair<string, string>>
         {
-            new KeyValuePair<string, string>("cap-msg-id", Guid.NewGuid().ToString()),
-            new KeyValuePair<string, string>("cap-msg-name", kafkaResult.Topic)
+            new("cap-msg-id", Guid.NewGuid().ToString()),
+            new("cap-msg-name", kafkaResult.Topic)
         };
     });
 
     x.UseDashboard();
+});
+
+//Config Fluent Validation
+builder.Services.AddControllers().AddFluentValidation(options => {
+    options.ImplicitlyValidateChildProperties = true;
+    options.ImplicitlyValidateRootCollectionElements = true;
+    options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 });
 
 //Config Controller
