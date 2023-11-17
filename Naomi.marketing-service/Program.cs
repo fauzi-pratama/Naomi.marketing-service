@@ -17,6 +17,16 @@ builder.Services.AddDbContext<DataDbContext>(options => {
     options.UseNpgsql(appConfig.PostgreSqlConnectionString!);
 });
 
+//Config Fluent Validation
+builder.Services.AddControllers().AddFluentValidation(options => {
+    options.ImplicitlyValidateChildProperties = true;
+    options.ImplicitlyValidateRootCollectionElements = true;
+    options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+});
+
+//Config Automapper
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
 //Config Cap Kafka
 builder.Services.AddCap(x =>
 {
@@ -37,13 +47,6 @@ builder.Services.AddCap(x =>
     });
 
     x.UseDashboard();
-});
-
-//Config Fluent Validation
-builder.Services.AddControllers().AddFluentValidation(options => {
-    options.ImplicitlyValidateChildProperties = true;
-    options.ImplicitlyValidateRootCollectionElements = true;
-    options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 });
 
 //Config Controller
