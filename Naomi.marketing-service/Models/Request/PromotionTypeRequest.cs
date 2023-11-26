@@ -9,16 +9,20 @@
             public string? PromotionTypeKey { get; set; }
 
             public string? PromotionTypeName { get; set; }
+
+            public string? Username { get; set; }
         }
         public class UpdatePromotionType
         {
             public Guid Id { get; set; }
 
-            public string? PromotionClassId { get; set; }
+            public Guid PromotionClassId { get; set; }
 
             public string? PromotionTypeKey { get; set; }
 
             public string? PromotionTypeName { get; set; }
+
+            public string? Username { get; set; }
         }
     }
 }

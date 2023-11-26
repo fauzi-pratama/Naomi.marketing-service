@@ -8,6 +8,7 @@
 
             public string? PromotionClassName { get; set; }
 
+            public string? Username { get; set; }
         }
         public class UpdatePromotionClass
         {
@@ -16,6 +17,8 @@
             public string? PromotionClassKey { get; set; }
 
             public string? PromotionClassName { get; set; }
+
+            public string? Username { get; set; }
         }
     }
 }

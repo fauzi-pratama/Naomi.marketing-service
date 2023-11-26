@@ -33,5 +33,9 @@ namespace Naomi.marketing_service.Models.Entities
         [Required]
         [Column("active_flag", Order = 7)]
         public bool ActiveFlag { get; set; }
+
+
+        [NotMapped]
+        public string? Username { get; set; }
     }
 }

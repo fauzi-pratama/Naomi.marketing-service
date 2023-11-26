@@ -8,6 +8,8 @@
 
             public string? PromotionStatusName { get; set; }
 
+            public string? Username { get; set; }
+
         }
     }
 }

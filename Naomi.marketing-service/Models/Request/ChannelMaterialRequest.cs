@@ -2,14 +2,16 @@
 {
     public class ChannelMaterialRequest
     {
-        public class PromoChannel
+        public class PromoChannelRequest
         {
             public string? ChannelName { get; set; }
+            public string? Username { get; set; }
         }
 
-        public class PromoMaterial
+        public class PromoMaterialRequest
         {
             public string? MaterialName { get; set; }
+            public string? Username { get; set; }
         }
     }
 }
