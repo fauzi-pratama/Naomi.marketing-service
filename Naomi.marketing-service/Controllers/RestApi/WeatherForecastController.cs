@@ -1,6 +1,9 @@
 
+using AutoMapper;
 using DotNetCore.CAP;
 using Microsoft.AspNetCore.Mvc;
+using Naomi.marketing_service.Models.Dto;
+using Naomi.marketing_service.Models.Request;
 
 namespace Naomi.marketing_service.Controllers.RestApi;
 
@@ -10,11 +13,13 @@ public class WeatherForecastController : ControllerBase
 {
     private readonly ILogger<WeatherForecastController> _logger;
     private readonly ICapPublisher _capPublisher;
+    private readonly IMapper _mapper;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger, ICapPublisher capPublisher)
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, ICapPublisher capPublisher, IMapper mapper)
     {
         _logger = logger;
         _capPublisher = capPublisher;
+        _mapper = mapper;
     }
 
     [HttpGet("/send_site")]
@@ -59,5 +64,19 @@ public class WeatherForecastController : ControllerBase
         _capPublisher.Publish("site", data);
 
         return Ok();
+    }
+
+    [HttpPost("/mapper_single")]
+    public IActionResult MapperSingle(ExampleRequest request)
+    {
+        var data = _mapper.Map<ExampleDto>(request);
+        return Ok(data);
+    }
+
+    [HttpPost("/mapper_list")]
+    public IActionResult MapperList(List<ExampleRequest> request)
+    {
+        var data = _mapper.Map<List<ExampleDto>>(request);
+        return Ok(data);
     }
 }
