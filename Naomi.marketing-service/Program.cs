@@ -1,6 +1,8 @@
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Naomi.marketing_service.Configurations;
 using Naomi.marketing_service.Models.Contexts;
@@ -20,7 +22,7 @@ using Naomi.marketing_service.Services.S3Service;
 using Naomi.marketing_service.Services.SapService;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
-
+using System.Security.Cryptography;
 
 //config App
 var builder = WebApplication.CreateBuilder(args);
@@ -80,9 +82,24 @@ builder.Services.AddScoped<IPubService, PubService>();
 builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<ISapService, SapService>();
 
-
 //Config Automapper
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+//Config Jwt Auth
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    var rsa = RSA.Create();
+    rsa.ImportFromPem(appConfig.PublicKey!);
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false,
+        ValidateIssuer = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new RsaSecurityKey(rsa)
+    };
+});
 
 //Config Filter Validation
 builder.Services.Configure<ApiBehaviorOptions>(options =>
