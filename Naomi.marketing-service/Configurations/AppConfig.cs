@@ -4,5 +4,6 @@
     {
         public string? PostgreSqlConnectionString { get; set; }
         public string? KafkaConnectionString { get; set; }
+        public string? PublicKey { get; set; }
     }
 }
