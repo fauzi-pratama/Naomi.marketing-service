@@ -75,5 +75,10 @@ namespace Naomi.marketing_service.Services.PubService
                 _logger.LogError(string.Format("error publish topic {0}. {1}", CreateUpdate == "Create" ? "promotypecreated" : "promotypeupdated", ex.Message));
             }
         }
+
+        public void SendPromoCreatedMessage(PromotionHeader promoHeader, string CreateUpdate)
+        {
+            //
+        }
     }
 }

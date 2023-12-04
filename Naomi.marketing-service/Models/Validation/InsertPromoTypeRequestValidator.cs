@@ -3,9 +3,9 @@ using Naomi.marketing_service.Models.Request;
 
 namespace Naomi.marketing_service.Models.Validation
 {
-    public class CreatePromoTypeRequestValidator : AbstractValidator<PromotionTypeRequest.CreatePromotionType>
+    public class InsertPromoTypeRequestValidator : AbstractValidator<PromotionTypeRequest.CreatePromotionType>
     {
-        public CreatePromoTypeRequestValidator()
+        public InsertPromoTypeRequestValidator()
         {
             ClassLevelCascadeMode = CascadeMode.Stop;
 

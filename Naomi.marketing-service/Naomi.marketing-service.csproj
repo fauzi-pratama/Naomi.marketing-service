@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Configurations\AutoMapperProfile .cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="DotNetCore.CAP" Version="7.2.2" />
     <PackageReference Include="DotNetCore.CAP.Dashboard" Version="7.2.2" />

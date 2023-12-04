@@ -4,9 +4,9 @@ using static Naomi.marketing_service.Models.Request.PromotionClassRequest;
 
 namespace Naomi.marketing_service.Models.Validation
 {
-    public class CreatePromoChannelRequestValidator : AbstractValidator<PromoChannelRequest>
+    public class InsertPromoChannelRequestValidator : AbstractValidator<PromoChannelRequest>
     {
-        public CreatePromoChannelRequestValidator()
+        public InsertPromoChannelRequestValidator()
         {
             ClassLevelCascadeMode = CascadeMode.Stop;
 

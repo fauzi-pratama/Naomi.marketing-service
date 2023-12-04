@@ -9,6 +9,7 @@
             public string? CompanyCode { get; set; }
             public List<ApprovalMappingViewDetail>? ApprovalMappingList { get; set; }
             public bool ActiveFlag { get; set; }
+            public string? Username { get; set; }
         }
         public class ApprovalMappingViewDetail
         {

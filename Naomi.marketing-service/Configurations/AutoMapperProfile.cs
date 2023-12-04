@@ -6,6 +6,7 @@ using static Naomi.marketing_service.Models.Request.PromotionTypeRequest;
 using static Naomi.marketing_service.Models.Request.ChannelMaterialRequest;
 using static Naomi.marketing_service.Models.Request.PromotionStatusRequest;
 using Naomi.marketing_service.Models.Request;
+using static Naomi.marketing_service.Models.Response.ApprovalMappingResponse;
 
 namespace Naomi.marketing_service.Configurations
 {
@@ -24,6 +25,11 @@ namespace Naomi.marketing_service.Configurations
             CreateMap<CreatePromotionStatus, PromotionStatus>();
             CreateMap<AppDisplayRequest, PromotionAppDisplay>();
             CreateMap<AppDisplayEditRequest, PromotionAppDisplay>();
+
+            CreateMap<CreateApprovalMapping, ApprovalMappingView>();
+            CreateMap<UpdateApprovalMapping, ApprovalMappingView>();
+            CreateMap<ApprovalMappingRequest, ApprovalMappingViewDetail>();
+            CreateMap<ApprovalMappingDetail, ApprovalMappingViewDetail>();
         }
     }
 }

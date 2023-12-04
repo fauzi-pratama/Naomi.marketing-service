@@ -3,9 +3,9 @@ using static Naomi.marketing_service.Models.Request.ChannelMaterialRequest;
 
 namespace Naomi.marketing_service.Models.Validation
 {
-    public class CreatePromoMaterialRequestValidator : AbstractValidator<PromoMaterialRequest>
+    public class InsertPromoMaterialRequestValidator : AbstractValidator<PromoMaterialRequest>
     {
-        public CreatePromoMaterialRequestValidator()
+        public InsertPromoMaterialRequestValidator()
         {
             ClassLevelCascadeMode = CascadeMode.Stop;
 

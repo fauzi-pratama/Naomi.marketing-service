@@ -12,6 +12,7 @@
         public Guid CompanyId { get; set; }
         public string? CompanyCode { get; set; }
         public List<ApprovalMappingRequest>? ApprovalMappingList { get; set; }
+        public string? Username { get; set; }
     }
 
     public class UpdateApprovalMapping
@@ -21,6 +22,7 @@
         public string? CompanyCode { get; set; }
         public List<ApprovalMappingRequest>? ApprovalMappingList { get; set; }
         public bool ActiveFlag { get; set; }
+        public string? Username { get; set;}
     }
 
     public class GeneratePromoApproval
@@ -36,5 +38,6 @@
         public string? ApproverId { get; set; }
         public bool Approve { get; set; } = false;
         public string? ApprovalNotes { get; set; }
+        public string? Username { get; set; }
     }
 }
