@@ -25,6 +25,7 @@ namespace Naomi.marketing_service.Models.Response
         public int MaxPromoUsedQty { get; set; }
         public bool MultiplePromo { get; set; }
         public int MultiplePromoMaxQty { get; set; }
+        public int MaxQtyPromo { get; set; }
         public Guid PromotionClassId { get; set; }
         public string? PromotionClassName { get; set; }
         public Guid? PromotionTypeId { get; set; }

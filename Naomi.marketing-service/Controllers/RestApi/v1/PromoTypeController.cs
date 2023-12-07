@@ -4,6 +4,7 @@ using Naomi.marketing_service.Models.Entities;
 using Naomi.marketing_service.Models.Response;
 using Naomi.marketing_service.Services.PromoTypeService;
 using static Naomi.marketing_service.Models.Request.PromotionTypeRequest;
+using Newtonsoft.Json;
 
 namespace Naomi.marketing_service.Controllers.RestApi.v1
 {
@@ -22,6 +23,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
             _logger = logger;
         }
 
+        #region GetData
         [HttpGet("get_promotion_type")]
         public async Task<ActionResult<ServiceResponse<List<PromotionType>>>> GetPromotionType(Guid id)
         {
@@ -59,43 +61,60 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 return NotFound(response);
             }
         }
+        #endregion
 
+        #region InsertData
         [HttpPost("add_promotion_type")]
         public async Task<ActionResult<ServiceResponse<PromotionType>>> AddPromotionType([FromBody] CreatePromotionType promotionType)
         {
+            _logger.LogInformation(string.Format("Calling add_promotion_type with params {0}", JsonConvert.SerializeObject(promotionType)));
+
             var newPromoType = await _promoTypeService.InsertPromotionType(_mapper.Map<PromotionType>(promotionType));
             ServiceResponse<PromotionType> response = new();
 
             if (newPromoType.Item1 != null && newPromoType.Item1.Id != Guid.Empty)
             {
                 response.Data = newPromoType.Item1;
+
+                _logger.LogInformation(string.Format("Success add_promotion_type with params {0}", JsonConvert.SerializeObject(promotionType)));
                 return Ok(response);
             }
             else
             {
                 response.Message = newPromoType.Item2;
                 response.Success = false;
+
+                _logger.LogError(string.Format("Failed add_promotion_type with params {0}", JsonConvert.SerializeObject(promotionType)));
                 return BadRequest(response);
             }
         }
+        #endregion
 
+        #region UpdateData
         [HttpPut("update_promotion_type")]
         public async Task<ActionResult<ServiceResponse<PromotionType>>> UpdatePromotionType([FromBody] UpdatePromotionType promoTypeUpdate)
         {
+            _logger.LogInformation(string.Format("Calling update_promotion_type with params {0}", JsonConvert.SerializeObject(promoTypeUpdate)));
+
             var updatePromoType = await _promoTypeService.UpdatePromotionType(_mapper.Map<PromotionType>(promoTypeUpdate));
             ServiceResponse<PromotionType> response = new();
 
             if (updatePromoType.Item1 != null && updatePromoType.Item1.Id != Guid.Empty)
             {
                 response.Data = updatePromoType.Item1;
+
+                _logger.LogInformation(string.Format("Success update_promotion_type with params {0}", JsonConvert.SerializeObject(promoTypeUpdate)));
                 return Ok(response);
             }
             else
             {
                 response.Message = updatePromoType.Item2;
                 response.Success = false;
+
+                _logger.LogError(string.Format("Failed update_promotion_type with params {0}", JsonConvert.SerializeObject(promoTypeUpdate)));
                 return BadRequest(response);
             }
         }
+        #endregion
     }
 }

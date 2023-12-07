@@ -28,6 +28,7 @@
         public List<Member>? Members { get; set; }
         public bool MultipleApp { get; set; }
         public int MultipleAppQty { get; set; }
+        public int MaxQtyPromo { get; set; }
         public int PromoQuota { get; set; }
         public int PromoBalance { get; set; }
         public bool IsActive { get; set; }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Naomi.marketing_service.Models.Contexts;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Naomi.marketing_service.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    partial class DataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231206072446_updateDb6Des")]
+    partial class updateDb6Des
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -707,48 +710,48 @@ namespace Naomi.marketing_service.Migrations
                             Id = new Guid("302be9cd-5e08-454d-b8e5-582d336750d7"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5476),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(629),
                             LineNum = 1,
                             PromotionClassKey = "ITEM",
                             PromotionClassName = "ITEM",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5488)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(638)
                         },
                         new
                         {
                             Id = new Guid("8713bd36-48d6-43dd-94b9-407c3aff1528"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5492),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(641),
                             LineNum = 2,
                             PromotionClassKey = "CART",
                             PromotionClassName = "CART",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5493)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(643)
                         },
                         new
                         {
                             Id = new Guid("dbf358cb-f43b-4d69-9176-8ee63ac8953f"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5494),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(645),
                             LineNum = 3,
                             PromotionClassKey = "MOP",
                             PromotionClassName = "MOP",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5495)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(646)
                         },
                         new
                         {
                             Id = new Guid("c386c5f1-d3d2-4e7f-ad6a-34b4f185325c"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5497),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(651),
                             LineNum = 4,
                             PromotionClassKey = "Entertain",
                             PromotionClassName = "Entertain",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5498)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(652)
                         });
                 });
 
@@ -1603,130 +1606,130 @@ namespace Naomi.marketing_service.Migrations
                             Id = new Guid("fac8e236-2fb7-4b4a-b644-0680f60fd0a0"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5605),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(755),
                             LineNum = 1,
                             PromotionClassId = new Guid("302be9cd-5e08-454d-b8e5-582d336750d7"),
                             PromotionTypeKey = "ITEM",
                             PromotionTypeName = "BUY X GET Y ITEM",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5606)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(756)
                         },
                         new
                         {
                             Id = new Guid("e0d70f81-6a25-434d-9055-e50554ef585c"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5610),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(760),
                             LineNum = 1,
                             PromotionClassId = new Guid("302be9cd-5e08-454d-b8e5-582d336750d7"),
                             PromotionTypeKey = "SP",
                             PromotionTypeName = "SPECIAL PRICE ITEM",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5611)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(761)
                         },
                         new
                         {
                             Id = new Guid("1f57489b-cca0-4392-ae00-3d145012d375"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5614),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(810),
                             LineNum = 2,
                             PromotionClassId = new Guid("302be9cd-5e08-454d-b8e5-582d336750d7"),
                             PromotionTypeKey = "AMOUNT",
                             PromotionTypeName = "DISCOUNT AMOUNT ITEM",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5614)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(811)
                         },
                         new
                         {
                             Id = new Guid("886470d3-5e0b-41ed-baa7-10cd94511e10"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5617),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(813),
                             LineNum = 2,
                             PromotionClassId = new Guid("302be9cd-5e08-454d-b8e5-582d336750d7"),
                             PromotionTypeKey = "PERCENT",
                             PromotionTypeName = "DISCOUNT PERCENT ITEM",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5618)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(814)
                         },
                         new
                         {
                             Id = new Guid("bd4f0c46-7d03-45fa-b33c-77028218593a"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5620),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(816),
                             LineNum = 2,
                             PromotionClassId = new Guid("302be9cd-5e08-454d-b8e5-582d336750d7"),
                             PromotionTypeKey = "BUNDLE",
                             PromotionTypeName = "DISCOUNT BUNDLING ITEM",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5621)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(817)
                         },
                         new
                         {
                             Id = new Guid("86ed449a-e4bc-4c28-a6e5-3ba18e491e63"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5623),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(819),
                             LineNum = 2,
                             PromotionClassId = new Guid("8713bd36-48d6-43dd-94b9-407c3aff1528"),
                             PromotionTypeKey = "AMOUNT",
                             PromotionTypeName = "DISCOUNT AMOUNT CART",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5624)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(820)
                         },
                         new
                         {
                             Id = new Guid("2524251a-565a-46c0-93d5-deea80c63ff5"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5626),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(822),
                             LineNum = 2,
                             PromotionClassId = new Guid("8713bd36-48d6-43dd-94b9-407c3aff1528"),
                             PromotionTypeKey = "PERCENT",
                             PromotionTypeName = "DISCOUNT PERCENT CART",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5627)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(823)
                         },
                         new
                         {
                             Id = new Guid("3c7ed57d-8235-453f-8f97-ba93b3747b4f"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5629),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(825),
                             LineNum = 2,
                             PromotionClassId = new Guid("dbf358cb-f43b-4d69-9176-8ee63ac8953f"),
                             PromotionTypeKey = "AMOUNT",
                             PromotionTypeName = "DISCOUNT AMOUNT MOP",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5630)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(826)
                         },
                         new
                         {
                             Id = new Guid("dda43968-95bd-4d94-8737-fd621d0a5895"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5632),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(828),
                             LineNum = 2,
                             PromotionClassId = new Guid("dbf358cb-f43b-4d69-9176-8ee63ac8953f"),
                             PromotionTypeKey = "PERCENT",
                             PromotionTypeName = "DISCOUNT PERCENT MOP",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5633)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(829)
                         },
                         new
                         {
                             Id = new Guid("57ae0d50-1d3b-4a33-8d7c-a4cab863aa30"),
                             ActiveFlag = true,
                             CreatedBy = "System",
-                            CreatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5635),
+                            CreatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(831),
                             LineNum = 2,
                             PromotionClassId = new Guid("c386c5f1-d3d2-4e7f-ad6a-34b4f185325c"),
                             PromotionTypeKey = "PERCENT",
                             PromotionTypeName = "DISCOUNT PERCENT Entertain",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTime(2023, 12, 6, 16, 7, 47, 806, DateTimeKind.Local).AddTicks(5636)
+                            UpdatedDate = new DateTime(2023, 12, 6, 14, 24, 46, 613, DateTimeKind.Local).AddTicks(832)
                         });
                 });
 
@@ -1823,6 +1826,12 @@ namespace Naomi.marketing_service.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("created_date")
                         .HasColumnOrder(5);
+
+                    b.Property<string>("SiteCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("site_code")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(50)

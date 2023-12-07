@@ -14,7 +14,7 @@ namespace Naomi.marketing_service.Services.PromoMaterialService
         }
 
         #region GetData
-        public async Task<Tuple<List<PromotionMaterial>, int>> GetPromotionMaterial(string searchName, int pageNo, int pageSize)
+        public async Task<Tuple<List<PromotionMaterial>, int>> GetPromotionMaterial(string? searchName, int pageNo, int pageSize)
         {
             List<PromotionMaterial> promoMaterials = new();
             int Skip = (pageNo - 1) * pageSize;

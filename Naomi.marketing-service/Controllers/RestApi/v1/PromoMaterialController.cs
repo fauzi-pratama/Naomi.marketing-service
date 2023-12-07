@@ -6,6 +6,7 @@ using Naomi.marketing_service.Models.Response;
 using Naomi.marketing_service.Services.PromoChannelService;
 using Naomi.marketing_service.Services.PromoMaterialService;
 using static Naomi.marketing_service.Models.Request.ChannelMaterialRequest;
+using Newtonsoft.Json;
 
 namespace Naomi.marketing_service.Controllers.RestApi.v1
 {
@@ -23,8 +24,9 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
             _logger = logger;
         }
 
+        #region GetData
         [HttpGet("get_promotion_material")]
-        public async Task<ActionResult<ServiceResponse<List<PromotionMaterial>>>> GetPromotionMaterial(string searchName = "", int pageNo = 1, int pageSize = 10)
+        public async Task<ActionResult<ServiceResponse<List<PromotionMaterial>>>> GetPromotionMaterial(string? searchName, int pageNo = 1, int pageSize = 10)
         {
             var promoMaterials = await _promoMaterialService.GetPromotionMaterial(searchName, pageNo, pageSize);
             ServiceResponse<List<PromotionMaterial>> response = new();
@@ -43,24 +45,33 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 return NotFound(response);
             }
         }
+        #endregion
 
+        #region InsertData
         [HttpPost("add_promotion_material")]
         public async Task<ActionResult<ServiceResponse<PromotionMaterial>>> AddPromotionMaterial([FromBody] PromoMaterialRequest promotionMaterial)
         {
+            _logger.LogInformation(string.Format("Calling add_promotion_material with params {0}", JsonConvert.SerializeObject(promotionMaterial)));
+
             var newPromoMaterial = await _promoMaterialService.InsertPromotionMaterial(_mapper.Map<PromotionMaterial>(promotionMaterial));
             ServiceResponse<PromotionMaterial> response = new();
 
             if (newPromoMaterial.Item1 != null && newPromoMaterial.Item1.Id != Guid.Empty)
             {
                 response.Data = newPromoMaterial.Item1;
+
+                _logger.LogInformation(string.Format("Success add_promotion_material with params {0}", JsonConvert.SerializeObject(promotionMaterial)));
                 return Ok(response);
             }
             else
             {
                 response.Message = newPromoMaterial.Item2;
                 response.Success = false;
+
+                _logger.LogError(string.Format("Failed add_promotion_material with params {0}", JsonConvert.SerializeObject(promotionMaterial)));
                 return BadRequest(response);
             }
         }
+        #endregion
     }
 }

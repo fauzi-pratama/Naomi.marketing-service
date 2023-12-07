@@ -6,6 +6,7 @@ using Naomi.marketing_service.Services.PromoChannelService;
 using Naomi.marketing_service.Services.PromoStatusService;
 using static Naomi.marketing_service.Models.Request.PromotionStatusRequest;
 using static Naomi.marketing_service.Models.Response.PromotionStatusResponse;
+using Newtonsoft.Json;
 
 namespace Naomi.marketing_service.Controllers.RestApi.v1
 {
@@ -23,6 +24,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
             _logger = logger;
         }
 
+        #region GetData
         [HttpGet("get_promotion_status")]
         public async Task<ActionResult<ServiceResponse<List<PromotionStatus>>>> GetPromotionStatus(Guid id)
         {
@@ -60,24 +62,33 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 return NotFound(response);
             }
         }
+        #endregion
 
+        #region InsertData
         [HttpPost("add_promo_status")]
         public async Task<ActionResult<ServiceResponse<PromotionStatus>>> AddPromoStatus([FromBody] CreatePromotionStatus promotionStatus)
         {
+            _logger.LogInformation(string.Format("Calling add_promo_status with params {0}", JsonConvert.SerializeObject(promotionStatus)));
+
             var newPromoStatus = await _promoStatusService.InsertPromotionStatus(_mapper.Map<PromotionStatus>(promotionStatus));
             ServiceResponse<PromotionStatus> response = new();
 
             if (newPromoStatus.Item1 != null && newPromoStatus.Item1.Id != Guid.Empty)
             {
                 response.Data = newPromoStatus.Item1;
+                
+                _logger.LogInformation(string.Format("Success add_promo_status with params {0}", JsonConvert.SerializeObject(promotionStatus)));
                 return Ok(response);
             }
             else
             {
                 response.Message = newPromoStatus.Item2;
                 response.Success = false;
+
+                _logger.LogError(string.Format("Failed add_promo_status with params {0}", JsonConvert.SerializeObject(promotionStatus)));
                 return BadRequest(response);
             }
         }
+        #endregion 
     }
 }

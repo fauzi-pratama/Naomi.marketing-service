@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Naomi.marketing_service.Controllers.MessageHandler;
 using Naomi.marketing_service.Models.Entities;
 using Naomi.marketing_service.Models.Request;
 using Naomi.marketing_service.Models.Response;
 using Naomi.marketing_service.Services.ApprovalService;
-using Naomi.marketing_service.Services.PromoAppService;
-using Naomi.marketing_service.Services.PromoTypeService;
+using Newtonsoft.Json;
 using static Naomi.marketing_service.Models.Response.ApprovalMappingResponse;
 
 namespace Naomi.marketing_service.Controllers.RestApi.v1
@@ -26,6 +24,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
             _logger = logger;
         }
 
+        #region GetData
         [HttpGet("get_approval_mapping")]
         public async Task<ActionResult<ServiceResponse<Tuple<List<ApprovalMappingView>, string>>>> GetApprovalMapping(Guid? companyId, string? companyCode)
         {
@@ -62,10 +61,14 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 return NotFound(response);
             }
         }
+        #endregion
 
+        #region InsertData
         [HttpPost("add_approval_mapping")]
         public async Task<ActionResult<ServiceResponse<Tuple<ApprovalMappingView, string>>>> AddApprovalMapping([FromBody] CreateApprovalMapping createApprovalMapping)
         {
+            _logger.LogInformation(string.Format("Calling add_approval_mapping with params {0}", JsonConvert.SerializeObject(createApprovalMapping)));
+
             var newApprovalMappings = await _approvalService.InsertApprovalMapping(_mapper.Map<ApprovalMappingView>(createApprovalMapping));
             ServiceResponse<ApprovalMappingView> response = new();
 
@@ -73,61 +76,73 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
             {
                 response.Data = newApprovalMappings.Item1;
                 response.Message = newApprovalMappings.Item2;
+
+                _logger.LogInformation(string.Format("Success add_approval_mapping with params {0}", JsonConvert.SerializeObject(createApprovalMapping)));
                 return Ok(response);
             }
             else
             {
                 response.Message = newApprovalMappings!.Item2;
                 response.Success = false;
+
+                _logger.LogError(string.Format("Failed add_approval_mapping with params {0}", JsonConvert.SerializeObject(createApprovalMapping)));
                 return BadRequest(response);
             }
         }
+        #endregion
 
-        [HttpPut("approve_reject_promotion")]
-        public async Task<ActionResult<ServiceResponse<Tuple<PromotionApprovalDetail, string>>>> ApproveRejectPromotion([FromBody] ApproveRejectPromotion approvalStatus)
-        {
-            ServiceResponse<PromotionApprovalDetail> response = new();
-
-            if (approvalStatus == null)
-            {
-                response.Message = "Please check your data again";
-                response.Success = false;
-                return BadRequest(response);
-            }
-            else
-            {
-                var approvalMapping = await _approvalService.ApproveRejectPromotion(approvalStatus);
-                if (approvalMapping.Item1 != null && approvalMapping.Item1.Id! != Guid.Empty)
-                {
-                    response.Data = approvalMapping.Item1!;
-                    return Ok(response);
-                }
-                else
-                {
-                    response.Message = approvalMapping.Item2;
-                    response.Success = false;
-                    return BadRequest(response);
-                }
-            }
-        }
-
+        #region EditData
         [HttpPut("edit_approval_mapping")]
         public async Task<ActionResult<ServiceResponse<ApprovalMappingView>>> EditApprovalMapping([FromBody] UpdateApprovalMapping approvalUpdate)
         {
+            _logger.LogInformation(string.Format("Calling edit_approval_mapping with params {0}", JsonConvert.SerializeObject(approvalUpdate)));
+
             var updateApproval = await _approvalService.UpdateApprovalMapping(_mapper.Map<ApprovalMappingView>(approvalUpdate));
             ServiceResponse<ApprovalMappingView> response = new();
 
             if (updateApproval.Item1 != null && updateApproval.Item1.Id != Guid.Empty)
             {
                 response.Data = updateApproval.Item1;
+
+                _logger.LogInformation(string.Format("Success edit_approval_mapping with params {0}", JsonConvert.SerializeObject(approvalUpdate)));
                 return Ok(response);
             }
             else
             {
                 response.Message = updateApproval.Item2;
                 response.Success = false;
+
+                _logger.LogError(string.Format("Failed edit_approval_mapping with params {0}", JsonConvert.SerializeObject(approvalUpdate)));
                 return BadRequest(response);
             }
         }
+        #endregion
+
+        #region GeneratePromotionApproval
+        [HttpPost("generate_approval_status")]
+        public async Task<ActionResult<ServiceResponse<List<PromotionApproval>>>> GenerateApprovalStatus([FromBody] GeneratePromoApproval request)
+        {
+            _logger.LogInformation(string.Format("Calling generate_approval_status with params {0}", JsonConvert.SerializeObject(request)));
+
+            List<PromotionApproval> newPromoApprovalStatuses = await _approvalService.GeneratePromoApproval(request);
+            ServiceResponse<List<PromotionApproval>> response = new();
+
+            if (newPromoApprovalStatuses != null)
+            {
+                response.Data = newPromoApprovalStatuses;
+
+                _logger.LogInformation(string.Format("Success generate_approval_status with params {0}", JsonConvert.SerializeObject(request)));
+                return Ok(response);
+            }
+            else
+            {
+                response.Message = "";
+                response.Success = false;
+
+                _logger.LogInformation(string.Format("Failed generate_approval_status with params {0}", JsonConvert.SerializeObject(request)));
+                return BadRequest(response);
+            }
+        }
+        #endregion
     }
 }

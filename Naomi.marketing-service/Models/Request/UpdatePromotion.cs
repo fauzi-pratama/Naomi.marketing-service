@@ -10,6 +10,8 @@
         public string? Zones { get; set; }
         public string? Sites { get; set; }
 
+        public int MaxQtyPromo { get; set; }
+
         public bool MemberOnly { get; set; }
         public bool NewMember { get; set; }
         public string? Members { get; set; }

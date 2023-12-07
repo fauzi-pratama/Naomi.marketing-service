@@ -11,7 +11,7 @@ namespace Naomi.marketing_service.Services.ApprovalService
         Task<Tuple<List<ApprovalMappingView>, string>> GetApprovalMapping(Guid? companyId, string? companyCode);
         Task<Tuple<ApprovalMappingView?, string>> GetApprovalMappingById(Guid approvalMappingId);
         Task<Tuple<ApprovalMappingView, string>> InsertApprovalMapping(ApprovalMappingView approvalMapping);
-        Task<Tuple<PromotionApprovalDetail, string>> ApproveRejectPromotion(ApproveRejectPromotion promoApproval);
         Task<Tuple<ApprovalMappingView, string>> UpdateApprovalMapping(ApprovalMappingView approvalMapping);
+        Task<List<PromotionApproval>> GeneratePromoApproval(GeneratePromoApproval request);
     }
 }

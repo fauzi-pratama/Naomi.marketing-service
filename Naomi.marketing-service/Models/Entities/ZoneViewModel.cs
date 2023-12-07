@@ -14,9 +14,6 @@ namespace Naomi.marketing_service.Models.Entities
         [Column("company_code", Order = 1), MaxLength(50)]
         public string? CompanyCode { get; set; }
 
-        [Column("site_code", Order = 2), MaxLength(50)]
-        public string? SiteCode { get; set; }
-
         [Column("zone_code", Order = 3), MaxLength(50)]
         public string? ZoneCode { get; set; }
 

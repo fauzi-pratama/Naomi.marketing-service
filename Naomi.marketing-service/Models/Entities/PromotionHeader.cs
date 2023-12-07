@@ -92,59 +92,61 @@ namespace Naomi.marketing_service.Models.Entities
 
         [Column("multiple_promo_max_qty", Order = 22)]
         public int MultiplePromoMaxQty { get; set; }
+        [Column("max_qty_promo", Order = 23)]
+        public int MaxQtyPromo { get; set; }
 
-        [Column("requirement_exp", Order = 23), MaxLength(10)]
+        [Column("requirement_exp", Order = 24), MaxLength(10)]
         public string? RequirementExp { get; set; }
 
-        [Column("result_exp", Order = 24), MaxLength(10)]
+        [Column("result_exp", Order = 25), MaxLength(10)]
         public string? ResultExp { get; set; }
 
-        [Column("min_transaction", Order = 25)]
+        [Column("min_transaction", Order = 26)]
         public double MinTransaction { get; set; }
 
-        [Column("max_transaction", Order = 26)]
+        [Column("max_transaction", Order = 27)]
         public double MaxTransaction { get; set; }
 
-        [Column("value", Order = 27)]
+        [Column("value", Order = 28)]
         public string? Value { get; set; }
 
-        [Column("max_disc", Order = 28)]
+        [Column("max_disc", Order = 29)]
         public string? MaxDisc { get; set; }
 
-        [Column("member_only", Order = 29)]
+        [Column("member_only", Order = 30)]
         public bool MemberOnly { get; set; }
 
-        [Column("new_member", Order = 30)]
+        [Column("new_member", Order = 31)]
         public bool NewMember { get; set; } = false;
 
-        [Column("members", Order = 31)]
+        [Column("members", Order = 32)]
         public string? Members { get; set; }
 
-        [Column("mop_promo_selection_id", Order = 32)]
+        [Column("mop_promo_selection_id", Order = 33)]
         public string? MopPromoSelectionId { get; set; }
 
-        [Column("mop_promo_selection_code", Order = 33)]
+        [Column("mop_promo_selection_code", Order = 34)]
         public string? MopPromoSelectionCode { get; set; }
 
-        [Column("mop_promo_selection_name", Order = 34)]
+        [Column("mop_promo_selection_name", Order = 35)]
         public string? MopPromoSelectionName { get; set; }
 
-        [Column("nip_entertain", Order = 35), MaxLength(10)]
+        [Column("nip_entertain", Order = 36), MaxLength(10)]
         public string? NipEntertain { get; set; }
 
-        [Column("entertain_budget", Order = 36)]
+        [Column("entertain_budget", Order = 37)]
         public decimal? EntertainBudget { get; set; }
 
-        [Column("promo_terms_condition", Order = 37), DataType("text")]
+        [Column("promo_terms_condition", Order = 38), DataType("text")]
         public string? PromoTermsCondition { get; set; }
 
-        [Column("short_desc", Order = 38), DataType("text")]
+        [Column("short_desc", Order = 39), DataType("text")]
         public string? ShortDesc { get; set; }
 
-        [Column("display_on_app", Order = 39)]
+        [Column("display_on_app", Order = 40)]
         public bool? DisplayOnApp { get; set; } = true;
 
-        [Column("promo_displayed", Order = 40), DataType("text")]
+        [Column("promo_displayed", Order = 41), DataType("text")]
         public string? PromoDisplayed { get; set; }
 
         [NotMapped]
@@ -162,20 +164,20 @@ namespace Naomi.marketing_service.Models.Entities
         public List<PromotionAppImage>? PromoAppImages { get; set; }
 
 
-        [Column("created_date", Order = 41)]
+        [Column("created_date", Order = 42)]
         public DateTime CreatedDate { get; set; }
 
-        [Column("created_by", Order = 42), MaxLength(50)]
+        [Column("created_by", Order = 43), MaxLength(50)]
         public string? CreatedBy { get; set; }
 
-        [Column("updated_date", Order = 43)]
+        [Column("updated_date", Order = 44)]
         public DateTime UpdatedDate { get; set; }
 
-        [Column("updated_by", Order = 44), MaxLength(50)]
+        [Column("updated_by", Order = 45), MaxLength(50)]
         public string? UpdatedBy { get; set; }
 
         [Required]
-        [Column("active_flag", Order = 45)]
+        [Column("active_flag", Order = 46)]
         public bool ActiveFlag { get; set; }
     }
 }

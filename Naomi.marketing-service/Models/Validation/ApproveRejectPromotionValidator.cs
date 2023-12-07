@@ -9,21 +9,24 @@ namespace Naomi.marketing_service.Models.Validation
         {
             ClassLevelCascadeMode = CascadeMode.Stop;
 
-            //PromotioHeaderId
+            #region PromotioHeaderId
             RuleFor(x => x.PromotionHeaderId).NotNull()
                                              .NotEmpty()
                                              .NotEqual(Guid.Empty)
                                              .WithMessage("Promotion Id is required");
+            #endregion
 
-            //ApproverId
+            #region ApproverId
             RuleFor(x => x.ApproverId).NotNull()
                                       .NotEmpty()
                                       .NotEqual("string", StringComparer.OrdinalIgnoreCase)
                                       .WithMessage("Approver id is required");
+            #endregion
 
-            //ApprovalNote
+            #region ApprovalNote
             RuleFor(x => x.ApprovalNotes).NotEqual("string", StringComparer.OrdinalIgnoreCase)
                                          .WithMessage("Please check approval notes");
+            #endregion
         }
     }
 }

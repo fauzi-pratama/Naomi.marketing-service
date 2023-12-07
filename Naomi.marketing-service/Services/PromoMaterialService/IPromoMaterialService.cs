@@ -5,7 +5,7 @@ namespace Naomi.marketing_service.Services.PromoMaterialService
 {
     public interface IPromoMaterialService
     {
-        Task<Tuple<List<PromotionMaterial>, int>> GetPromotionMaterial(string searchName, int pageNo, int pageSize);
+        Task<Tuple<List<PromotionMaterial>, int>> GetPromotionMaterial(string? searchName, int pageNo, int pageSize);
         Task<Tuple<PromotionMaterial, string>> InsertPromotionMaterial(PromotionMaterial newPromoMaterial);
     }
 }

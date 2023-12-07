@@ -4,6 +4,7 @@ using Naomi.marketing_service.Models.Entities;
 using Naomi.marketing_service.Models.Response;
 using Naomi.marketing_service.Services.PromoClassService;
 using static Naomi.marketing_service.Models.Request.PromotionClassRequest;
+using Newtonsoft.Json;
 
 namespace Naomi.marketing_service.Controllers.RestApi.v1
 {
@@ -22,6 +23,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
             _logger = logger;
         }
 
+        #region GetData
         [HttpGet("get_promotion_class")]
         public async Task<ActionResult<ServiceResponse<List<PromotionClass>>>> GetPromotionClass(Guid id)
         {
@@ -40,43 +42,60 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 return NotFound(response);
             }
         }
+        #endregion
 
+        #region InsertData
         [HttpPost("add_promotion_class")]
         public async Task<ActionResult<ServiceResponse<PromotionClass>>> AddPromotionClass([FromBody] CreatePromotionClass promotionClass)
         {
+            _logger.LogInformation(string.Format("Calling add_promotion_class with params {0}", JsonConvert.SerializeObject(promotionClass)));
+
             ServiceResponse<PromotionClass> response = new();
             var newPromoClass = await _promoClassService.InsertPromotionClass(_mapper.Map<PromotionClass>(promotionClass));
             
             if (newPromoClass.Item1 != null && newPromoClass.Item1.Id != Guid.Empty)
             {
                 response.Data = newPromoClass.Item1;
+
+                _logger.LogInformation(string.Format("Success add_promotion_class with params {0}", JsonConvert.SerializeObject(promotionClass)));
                 return Ok(response);
             }
             else
             {
                 response.Message = newPromoClass.Item2 == "" ? "Data not found" : newPromoClass.Item2;
                 response.Success = false;
+
+                _logger.LogError(string.Format("Failed add_promotion_class with params {0}", JsonConvert.SerializeObject(promotionClass)));
                 return BadRequest(response);
             }
         }
+        #endregion
 
+        #region UpdateData
         [HttpPut("update_promotion_class")]
         public async Task<ActionResult<ServiceResponse<PromotionClass>>> UpdatePromotionClass([FromBody] UpdatePromotionClass promoClassUpdate)
         {
+            _logger.LogInformation(string.Format("Calling update_promotion_class with params {0}", JsonConvert.SerializeObject(promoClassUpdate)));
+
             ServiceResponse<PromotionClass> response = new();
             var updatePromoClass = await _promoClassService.UpdatePromotionClass(_mapper.Map<PromotionClass>(promoClassUpdate));
 
             if (updatePromoClass.Item1 != null && updatePromoClass.Item1.Id != Guid.Empty)
             {
                 response.Data = updatePromoClass.Item1;
+
+                _logger.LogInformation(string.Format("Sucess update_promotion_class with params {0}", JsonConvert.SerializeObject(promoClassUpdate)));
                 return Ok(response);
             }
             else
             {
                 response.Message = updatePromoClass!.Item2 == "" ? "Data not found" : updatePromoClass.Item2;
                 response.Success = false;
+
+                _logger.LogError(string.Format("Failed update_promotion_class with params {0}", JsonConvert.SerializeObject(promoClassUpdate)));
                 return BadRequest(response);
             }
         }
+        #endregion
     }
 }

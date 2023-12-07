@@ -176,6 +176,10 @@ namespace Naomi.marketing_service.Services.ApprovalService
 
             try
             {
+                existingApprvMapping.ActiveFlag = approvalMapping.ActiveFlag;
+                existingApprvMapping.UpdatedDate = DateTime.UtcNow;
+                existingApprvMapping.UpdatedBy = approvalMapping.Username;
+
                 //delete existing ApprovalMappingDetail
                 if (existingApprvMapping.ApprovalMappingDetail!.Count > 0)
                     _dbContext.ApprovalMappingDetail.RemoveRange(existingApprvMapping.ApprovalMappingDetail!);
@@ -210,109 +214,107 @@ namespace Naomi.marketing_service.Services.ApprovalService
         }
         #endregion
 
-        #region ApproveRejectPromotion
-        public async Task<Tuple<PromotionApprovalDetail, string>> ApproveRejectPromotion(ApproveRejectPromotion promoApproval)
+        #region GeneratePromoApproval
+        public async Task<List<PromotionApproval>> GeneratePromoApproval(GeneratePromoApproval request)
         {
-            try
+            ApprovalMapping approvalMapping = new();
+            List<ApprovalMappingDetail> approvalMappingDetails = new();
+            List<PromotionApproval> promoApprovals = new();
+            List<PromotionApprovalDetail> promoApprvDetails = new();
+            List<PromotionHeader> promotionHeaders = new();
+            List<PromotionHistory> promotionHistories = new();
+            Guid headerId = Guid.NewGuid(); 
+            PromotionStatus statusDraft = await _promoStatusService.GetPromotionStatusByNameAsync("DRAFT");
+
+            if (request.CompanyId != Guid.Empty)
             {
-                PromotionApproval updatedPromoApproval = await _dbContext.PromotionApproval.FirstOrDefaultAsync(x => x.PromotionHeaderId == promoApproval.PromotionHeaderId) ?? new PromotionApproval();
-                var currentApprove = await _dbContext.PromotionApprovalDetail!.OrderBy(x => x.ApprovalLevel).FirstOrDefaultAsync(x => x.PromotionApprovalId == updatedPromoApproval!.Id && !x.ApprovalDate.HasValue);
-                var updatedApprovalStatus = await _dbContext.PromotionApprovalDetail!.FirstOrDefaultAsync(x => x.PromotionApprovalId == updatedPromoApproval!.Id && x.ApprovalLevel == currentApprove!.ApprovalLevel && x.ApproverId == promoApproval.ApproverId);
-                if (updatedApprovalStatus == null)
-                    return new Tuple<PromotionApprovalDetail, string>(new PromotionApprovalDetail(), string.Format("Approval Status for User {0} is not found", promoApproval.ApproverId));
+                approvalMapping = await _dbContext.ApprovalMapping.Where(x => x.CompanyId == request.CompanyId && x.ActiveFlag).FirstOrDefaultAsync() ?? new ApprovalMapping();
+                if (approvalMapping == null || approvalMapping.Id == Guid.Empty)
+                    return promoApprovals;
 
-                PromotionHeader promoHeader = await _dbContext.PromotionHeader.Where(x => x.Id == promoApproval.PromotionHeaderId)
-                                                                              .Include(p => p.PromoRuleRequirements)
-                                                                              .Include(p => p.PromoRuleResults)
-                                                                              .Include(p => p.PromoRuleMops)
-                                                                              .FirstOrDefaultAsync() ?? new PromotionHeader();
-                PromotionHistory promoHistory = new();
-                List<PromotionApprovalDetail> checkNextPrevLevels = new();
-                PromoCreated promoCreated = new();
+                approvalMappingDetails = await _dbContext.ApprovalMappingDetail!.Where(x => x.ApprovalMappingId == approvalMapping.Id).ToListAsync() ?? new List<ApprovalMappingDetail>();
 
-                updatedApprovalStatus.Approve = promoApproval.Approve;
-                updatedApprovalStatus.ApprovalDate = DateTime.UtcNow;
-                updatedApprovalStatus.ApprovalNotes = promoApproval.ApprovalNotes;
-
-                PromotionStatus status = new();
-                if (!promoApproval.Approve)
+                if (request.PromotionHeaderId != Guid.Empty)
                 {
-                    status = await _promoStatusService.GetPromotionStatusByNameAsync("REJECT");
-                    if (status!.Id != Guid.Empty)
+                    promoApprovals.Add(SetPromoApprovalHeader(headerId, approvalMapping.Id, request.PromotionHeaderId));
+                    promoApprvDetails.AddRange(SetPromoApprovalDetail(approvalMappingDetails, headerId));
+                }
+                else
+                {
+                    var promoHeaderIds = await _dbContext.PromotionApproval!.Select(x => x.PromotionHeaderId).Distinct().ToListAsync();
+                    promotionHeaders = await _dbContext.PromotionHeader!.Where(x => !promoHeaderIds.Contains(x.Id) && x.CompanyId == request.CompanyId && x.StartDate.Date >= DateTime.UtcNow.Date).ToListAsync() ?? new List<PromotionHeader>();
+                    foreach (PromotionHeader promoHeader in promotionHeaders)
                     {
-                        promoHistory = new()
+                        headerId = Guid.NewGuid();
+                        promoApprovals.Add(SetPromoApprovalHeader(headerId, approvalMapping.Id, promoHeader.Id));
+                        promoApprvDetails.AddRange(SetPromoApprovalDetail(approvalMappingDetails, headerId));
+
+                        //set promo status back to draft
+                        if (statusDraft != null)
                         {
-                            Id = Guid.NewGuid(),
-                            PromotionHeaderId = promoApproval.PromotionHeaderId,
-                            PromotionStatusId = status.Id,
-                            CreatedDate = DateTime.UtcNow,
-                            CreatedBy = promoApproval.Username,
-                            UpdatedDate = DateTime.UtcNow,
-                            UpdatedBy = promoApproval.Username,
-                            ActiveFlag = true
-                        };
+                            PromotionHistory newPromoHistory = new()
+                            {
+                                Id = Guid.NewGuid(),
+                                PromotionHeaderId = promoHeader.Id,
+                                PromotionStatusId = statusDraft.Id,
+                                CreatedDate = DateTime.UtcNow,
+                                CreatedBy = promoHeader.Username,
+                                UpdatedDate = DateTime.UtcNow,
+                                UpdatedBy = promoHeader.Username,
+                                ActiveFlag = true
+                            };
+                            promotionHistories.Add(newPromoHistory);
+                        }
 
-                        promoHeader.PromotionStatusId = status.Id;
+                        promoHeader.PromotionStatusId = statusDraft!.Id;
+                        _dbContext.PromotionHeader.Update(promoHeader);
                     }
                 }
 
-                //cek final approval ato bukan
-                bool isFinalApprove = false;
-                var finalApprove = await _dbContext.PromotionApprovalDetail!.Where(x => x.PromotionApprovalId == updatedPromoApproval!.Id).OrderByDescending(x => x.ApprovalLevel).FirstOrDefaultAsync();
-                if (finalApprove != null && finalApprove.ApprovalLevel == updatedApprovalStatus.ApprovalLevel && promoApproval.Approve)
-                {
-                    isFinalApprove = true;
-                    if (promoHeader!.StartDate <= DateTime.UtcNow && promoHeader.EndDate >= DateTime.UtcNow)
-                    {
-                        status = await _promoStatusService.GetPromotionStatusByNameAsync("RUN");
-                    }
-                    else if (promoHeader.StartDate > DateTime.UtcNow)
-                    {
-                        status = await _promoStatusService.GetPromotionStatusByNameAsync("SCHEDULE");
-                    }
-                    if (status!.Id != Guid.Empty)
-                    {
-                        promoHistory = new()
-                        {
-                            Id = Guid.NewGuid(),
-                            PromotionHeaderId = promoApproval.PromotionHeaderId,
-                            PromotionStatusId = status.Id,
-                            CreatedDate = DateTime.UtcNow,
-                            CreatedBy = promoApproval.Username,
-                            UpdatedDate = DateTime.UtcNow,
-                            UpdatedBy = promoApproval.Username,
-                            ActiveFlag = true
-                        };
-
-                        promoHeader.PromotionStatusId = status.Id;
-                    }
-
-                    ////getPromoMessage
-                    //promoCreated = (PromoCreated)await GetPromoMessage("Create", promoHeader, promoHeader.PromoRuleRequirements ?? new List<PromotionRuleRequirement>(), promoHeader.PromoRuleResults ?? new List<PromotionRuleResult>(), promoHeader.PromoRuleMops ?? new List<PromotionRuleMopGroup>());
-                }
-
-                _dbContext.PromotionApprovalDetail.UpdateRange(checkNextPrevLevels);
-                if (promoHistory.Id != Guid.Empty)
-                {
-                    _dbContext.PromotionHistory.Add(promoHistory);
-                    _dbContext.PromotionHeader.Update(promoHeader);
-                }
-
+                _dbContext.PromotionApproval.AddRange(promoApprovals);
+                _dbContext.PromotionApprovalDetail.AddRange(promoApprvDetails);
+                _dbContext.PromotionHistory.AddRange(promotionHistories);
                 await _dbContext.SaveChangesAsync();
-
-                //publish event to promotionService
-                if (isFinalApprove)
-                {
-                    _pubService.SendPromoCreatedMessage(promoHeader, "Create");
-                }
-
-                return new Tuple<PromotionApprovalDetail, string>(updatedApprovalStatus, "");
-
             }
-            catch (Exception ex)
+
+            return promoApprovals;
+        }
+        public PromotionApproval SetPromoApprovalHeader(Guid promoApprId, Guid apprvMapId, Guid promoHeaderId)
+        {
+            PromotionApproval newPromoApproval = new()
             {
-                return new Tuple<PromotionApprovalDetail, string>(new PromotionApprovalDetail(), ex.Message);
+                Id = promoApprId,
+                ApprovalMappingId = apprvMapId,
+                PromotionHeaderId = promoHeaderId,
+                ActiveFlag = true,
+                CreatedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow
+            };
+
+            return newPromoApproval;
+        }
+        public List<PromotionApprovalDetail> SetPromoApprovalDetail(List<ApprovalMappingDetail> approvalDetails, Guid apprvHeaderId)
+        {
+            List<PromotionApprovalDetail> newPromoApprvDetail = new();
+            foreach (var detil in approvalDetails)
+            {
+                newPromoApprvDetail.Add(
+                    new PromotionApprovalDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        PromotionApprovalId = apprvHeaderId,
+                        ApprovalLevel = detil.ApprovalLevel,
+                        ApproverId = detil.ApproverId,
+                        JobPosition = detil.JobPosition,
+                        Approve = false,
+                        ApprovalDate = null,
+                        ApprovalNotes = null,
+                        ActiveFlag = true,
+                        CreatedDate = DateTime.UtcNow,
+                        UpdatedDate = DateTime.UtcNow
+                    });
             }
+            return newPromoApprvDetail;
         }
         #endregion
     }

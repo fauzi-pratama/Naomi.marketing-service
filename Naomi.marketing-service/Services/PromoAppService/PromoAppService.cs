@@ -1,8 +1,6 @@
-﻿using DotNetCore.CAP.Internal;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Naomi.marketing_service.Models.Contexts;
 using Naomi.marketing_service.Models.Entities;
-using Naomi.marketing_service.Helpers;
 using Helper = Naomi.marketing_service.Helpers.Helper;
 
 namespace Naomi.marketing_service.Services.PromoAppService

@@ -1,45 +1,68 @@
-﻿namespace Naomi.marketing_service.Models.Request
+﻿using Newtonsoft.Json;
+
+namespace Naomi.marketing_service.Models.Request
 {
     public class CreatePromotion
     {
-        public Guid PromotionClassId { get; set; }
+        [JsonProperty("promotion_class_id")]
+        public Guid? PromotionClassId { get; set; }
+        [JsonProperty("promotion_class_name")]
         public string? PromotionClassName { get; set; }
 
+        [JsonProperty("promotion_type_id")]
         public Guid? PromotionTypeId { get; set; } = Guid.Empty;
+        [JsonProperty("promotion_type_name")]
         public string? PromotionTypeName { get; set; }
 
 
+        [JsonProperty("promotion_name")]
         public string? PromotionName { get; set; }
 
-        public Guid CompanyId { get; set; }
+        [JsonProperty("company_id")]
+        public Guid? CompanyId { get; set; }
+        [JsonProperty("company_code")]
         public string? CompanyCode { get; set; }
+        [JsonProperty("company_name")]
         public string? CompanyName { get; set; }
 
+        [JsonProperty("depts")]
         public string? Depts { get; set; }
 
+        [JsonProperty("start_date")]
         public DateTime StartDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        [JsonProperty("end_date")]
+        public DateTime? EndDate { get; set; }
 
+        [JsonProperty("promotion_channel")]
         public string? PromotionChannel { get; set; }
 
+        [JsonProperty("objective")]
         public string? Objective { get; set; }
 
+        [JsonProperty("promotion_material")]
         public string? PromotionMaterial { get; set; }
 
+        [JsonProperty("zones")]
         public string? Zones { get; set; }
 
+        [JsonProperty("sites")]
         public string? Sites { get; set; }
 
-        public int TargetSales { get; set; }
+        [JsonProperty("target_sales")]
+        public int? TargetSales { get; set; }
 
+        [JsonProperty("max_promo_used_type")]
         public string? MaxPromoUsedType { get; set; }
 
-        public int MaxPromoUsedQty { get; set; }
+        [JsonProperty("max_promo_used_qty")]
+        public int? MaxPromoUsedQty { get; set; }
 
-        public bool MultiplePromo { get; set; }
+        [JsonProperty("multiple_promo")]
+        public bool? MultiplePromo { get; set; }
 
-        public int MultiplePromoMaxQty { get; set; }
+        public int? MultiplePromoMaxQty { get; set; }
+        public int? MaxQtyPromo { get; set; }
 
         public string? RequirementExp { get; set; }
 
@@ -48,16 +71,16 @@
         public string? MopPromoSelectionCode { get; set; }
         public string? MopPromoSelectionName { get; set; }
 
-        public double MinTransaction { get; set; }
+        public double? MinTransaction { get; set; }
 
-        public double MaxTransaction { get; set; }
+        public double? MaxTransaction { get; set; }
 
         public string? Value { get; set; }
 
         public string? MaxDisc { get; set; }
 
-        public bool MemberOnly { get; set; }
-        public bool NewMember { get; set; } = false;
+        public bool? MemberOnly { get; set; }
+        public bool? NewMember { get; set; } = false;
         public string? Members { get; set; }
 
         public string? Username { get; set; }
