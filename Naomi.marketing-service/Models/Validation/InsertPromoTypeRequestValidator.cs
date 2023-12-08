@@ -10,10 +10,9 @@ namespace Naomi.marketing_service.Models.Validation
             ClassLevelCascadeMode = CascadeMode.Stop;
 
             #region Class Id
-            RuleFor(x => x.PromotionClassId).NotNull()
-                                            .NotEmpty()
-                                            .NotEqual(Guid.Empty)
-                                            .WithMessage("Promotion Class Id is required");
+            RuleFor(x => x.PromotionClassId).NotNull().WithMessage("Promotion Class Id is required")
+                                            .NotEmpty().WithMessage("Promotion Class Id is required")
+                                            .NotEqual(Guid.Empty).WithMessage("Promotion Class Id is required");
             #endregion
 
             #region Type Key

@@ -17,27 +17,27 @@ namespace Naomi.marketing_service.Models.Validation
             #endregion
 
             #region BucketName
-            RuleFor(x => x.BucketName).NotEqual("string", StringComparer.OrdinalIgnoreCase).When(x => !string.IsNullOrEmpty(x.BucketName)).WithMessage("Please check Bucket Name")
+            RuleFor(x => x.BucketName).NotEqual("string", StringComparer.OrdinalIgnoreCase).WithMessage("Please check Bucket Name")
                                       .MaximumLength(200).When(x => !string.IsNullOrEmpty(x.BucketName)).WithMessage("Bucket name must be 200 chars or less");
             #endregion
 
             #region Region
-            RuleFor(x => x.Region).NotEqual("string", StringComparer.OrdinalIgnoreCase).When(x => !string.IsNullOrEmpty(x.Region)).WithMessage("Please check Region")
+            RuleFor(x => x.Region).NotEqual("string", StringComparer.OrdinalIgnoreCase).WithMessage("Please check Region")
                                   .MaximumLength(200).When(x => !string.IsNullOrEmpty(x.Region)).WithMessage("Region must be 200 chars or less");
             #endregion
 
             #region SecretKey
-            RuleFor(x => x.SecretKey).NotEqual("string", StringComparer.OrdinalIgnoreCase).When(x => !string.IsNullOrEmpty(x.SecretKey)).WithMessage("Please check Secret Key")
+            RuleFor(x => x.SecretKey).NotEqual("string", StringComparer.OrdinalIgnoreCase).WithMessage("Please check Secret Key")
                                   .MaximumLength(200).When(x => !string.IsNullOrEmpty(x.SecretKey)).WithMessage("Secret Key must be 200 chars or less");
             #endregion
 
             #region AccessKey
-            RuleFor(x => x.AccessKey).NotEqual("string", StringComparer.OrdinalIgnoreCase).When(x => !string.IsNullOrEmpty(x.AccessKey)).WithMessage("Please check Access Key")
+            RuleFor(x => x.AccessKey).NotEqual("string", StringComparer.OrdinalIgnoreCase).WithMessage("Please check Access Key")
                                      .MaximumLength(200).When(x => !string.IsNullOrEmpty(x.AccessKey)).WithMessage("Access key must be 200 chars or less");
             #endregion
 
             #region BaseDirectory
-            RuleFor(x => x.BaseDirectory).NotEqual("string", StringComparer.OrdinalIgnoreCase).When(x => !string.IsNullOrEmpty(x.BaseDirectory)).WithMessage("Please check Base Directory")
+            RuleFor(x => x.BaseDirectory).NotEqual("string", StringComparer.OrdinalIgnoreCase).WithMessage("Please check Base Directory")
                                          .MaximumLength(200).When(x => !string.IsNullOrEmpty(x.BaseDirectory)).WithMessage("Base Directory must be 200 chars or less");
             #endregion
 

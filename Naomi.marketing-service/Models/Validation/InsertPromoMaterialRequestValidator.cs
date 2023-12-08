@@ -9,7 +9,7 @@ namespace Naomi.marketing_service.Models.Validation
         {
             ClassLevelCascadeMode = CascadeMode.Stop;
 
-            #region ChannelName
+            #region MaterialName
             RuleFor(x => x.MaterialName).NotNull().WithMessage("Material name is required")
                                         .NotEmpty().WithMessage("Material name is required")
                                         .NotEqual("string", StringComparer.OrdinalIgnoreCase).WithMessage("Material name is required")

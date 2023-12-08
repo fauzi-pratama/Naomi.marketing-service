@@ -98,5 +98,32 @@ namespace Naomi.marketing_service.Services.PubService
                 _logger.LogError(string.Format("error publish topic {0}. {1}", CreateUpdate == "Create" ? "promo_created" : "promo_updated", ex.Message));
             }
         }
+
+        public void SendPromoEmailUserMessage(PromoEmailUser promoEmailUser)
+        {
+            Dictionary<string, object> dataDetail = new();
+            foreach (PropertyInfo pi in promoEmailUser.GetType().GetProperties())
+            {
+                dataDetail.Add(pi.Name, pi.GetValue(promoEmailUser)!);
+            }
+
+            Dictionary<string, object> data = new()
+            {
+                {"SyncName", "promo_email_user" },
+                {"DocumentNumber", promoEmailUser.Nip! },
+                {"SyncData", dataDetail}
+            };
+
+            _logger.LogInformation(string.Format("attempt to publish topic {0}", "promo_email_user"));
+            try
+            {
+                _capPublisher.Publish("promo_email_user", data);
+                _logger.LogInformation(string.Format("Topic {0} published successfully", "promo_email_user"));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format("error publish topic {0}. {1}", "promo_email_user", ex.Message));
+            }
+        }
     }
 }

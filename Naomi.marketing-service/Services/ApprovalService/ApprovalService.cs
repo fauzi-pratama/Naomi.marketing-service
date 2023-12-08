@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Naomi.marketing_service.Models.Contexts;
 using Naomi.marketing_service.Models.Entities;
-using Naomi.marketing_service.Models.Message.Pub;
 using Naomi.marketing_service.Models.Request;
 using Naomi.marketing_service.Services.PromoStatusService;
 using Naomi.marketing_service.Services.PubService;
@@ -14,14 +13,12 @@ namespace Naomi.marketing_service.Services.ApprovalService
     {
         private readonly DataDbContext _dbContext;
         public readonly IMapper _mapper;
-        private readonly IPubService _pubService;
         private readonly IPromoStatusService _promoStatusService;
 
-        public ApprovalService(DataDbContext dbContext, IMapper mapper, IPubService pubService, IPromoStatusService promoStatusService)
+        public ApprovalService(DataDbContext dbContext, IMapper mapper, IPromoStatusService promoStatusService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
-            _pubService = pubService;
             _promoStatusService = promoStatusService;
         }
 

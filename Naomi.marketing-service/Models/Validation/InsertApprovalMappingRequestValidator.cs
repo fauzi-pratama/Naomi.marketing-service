@@ -10,29 +10,25 @@ namespace Naomi.marketing_service.Models.Validation
             ClassLevelCascadeMode = CascadeMode.Stop;
 
             #region CompanyId
-            RuleFor(x => x.CompanyId).NotNull()
-                                     .NotEmpty()
-                                     .NotEqual(Guid.Empty)
-                                     .When(x => string.IsNullOrEmpty(x.CompanyCode))
-                                     .WithMessage("Company is required");
+            RuleFor(x => x.CompanyId).NotNull().When(x => string.IsNullOrEmpty(x.CompanyCode)).WithMessage("Company is required")
+                                     .NotEmpty().When(x => string.IsNullOrEmpty(x.CompanyCode)).WithMessage("Company is required")
+                                     .NotEqual(Guid.Empty).When(x => string.IsNullOrEmpty(x.CompanyCode)).WithMessage("Company is required");
             #endregion
 
             #region CompanyCode
-            RuleFor(x => x.CompanyCode).NotNull()
-                                       .NotEmpty()
-                                       .When(x => x.CompanyId == Guid.Empty)
-                                       .WithMessage("Company is required");
+            RuleFor(x => x.CompanyCode).NotNull().When(x => x.CompanyId == Guid.Empty).WithMessage("Company is required")
+                                       .NotEmpty().When(x => x.CompanyId == Guid.Empty).WithMessage("Company is required")
+                                       .MaximumLength(50).WithMessage("Company code must be 50 chars or less");
             #endregion
 
             #region List of approver
-            RuleFor(x => x.ApprovalMappingList).NotNull()
-                                               .NotEmpty()
-                                               .WithMessage("Approver is required");
+            RuleFor(x => x.ApprovalMappingList).NotNull().WithMessage("Approver is required")
+                                               .NotEmpty().WithMessage("Approver is required");
             #endregion
 
             #region Username
-            RuleFor(x => x.Username).NotNull().WithMessage("Username is required")
-                                    .NotEmpty().WithMessage("Username is required")
+            RuleFor(x => x.Username).NotNull().WithMessage("Username is required").WithMessage("Username is required")
+                                    .NotEmpty().WithMessage("Username is required").WithMessage("Username is required")
                                     .NotEqual("string", StringComparer.OrdinalIgnoreCase).WithMessage("Username is required")
                                     .MaximumLength(50).WithMessage("Username must be 50 chars or less");
             #endregion

@@ -10,17 +10,16 @@ namespace Naomi.marketing_service.Models.Validation
             ClassLevelCascadeMode = CascadeMode.Stop;
 
             #region PromotioHeaderId
-            RuleFor(x => x.PromotionHeaderId).NotNull()
-                                             .NotEmpty()
-                                             .NotEqual(Guid.Empty)
-                                             .WithMessage("Promotion Id is required");
+            RuleFor(x => x.PromotionHeaderId).NotNull().WithMessage("Promotion Id is required")
+                                             .NotEmpty().WithMessage("Promotion Id is required")
+                                             .NotEqual(Guid.Empty).WithMessage("Promotion Id is required");
             #endregion
 
             #region ApproverId
-            RuleFor(x => x.ApproverId).NotNull()
-                                      .NotEmpty()
-                                      .NotEqual("string", StringComparer.OrdinalIgnoreCase)
-                                      .WithMessage("Approver id is required");
+            RuleFor(x => x.ApproverId).NotNull().WithMessage("Approver id is required")
+                                      .NotEmpty().WithMessage("Approver id is required")
+                                      .NotEqual("string", StringComparer.OrdinalIgnoreCase).WithMessage("Approver id is required")
+                                      .NotEqual("null", StringComparer.OrdinalIgnoreCase).WithMessage("Approver id is required");
             #endregion
 
             #region ApprovalNote
