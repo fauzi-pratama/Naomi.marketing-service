@@ -28,8 +28,8 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("get_promotion_status")]
         public async Task<ActionResult<ServiceResponse<List<PromotionStatus>>>> GetPromotionStatus(Guid id)
         {
-            List<PromotionStatus> promoStatus = await _promoStatusService.GetPromotionStatus(id);
             ServiceResponse<List<PromotionStatus>> response = new();
+            List<PromotionStatus> promoStatus = await _promoStatusService.GetPromotionStatus(id);
 
             if (promoStatus != null && promoStatus.Count > 0)
             {
@@ -47,8 +47,8 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("get_data_status")]
         public async Task<ActionResult<ServiceResponse<List<RespondPromotionStatusCount>>>> GetPromotionStatusCount()
         {
-            List<RespondPromotionStatusCount> statusCount = await _promoStatusService.GetPromotionStatusCount();
             ServiceResponse<List<RespondPromotionStatusCount>> response = new();
+            List<RespondPromotionStatusCount> statusCount = await _promoStatusService.GetPromotionStatusCount();
 
             if (statusCount != null && statusCount.Count > 0)
             {
@@ -68,16 +68,17 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPost("add_promo_status")]
         public async Task<ActionResult<ServiceResponse<PromotionStatus>>> AddPromoStatus([FromBody] CreatePromotionStatus promotionStatus)
         {
-            _logger.LogInformation(string.Format("Calling add_promo_status with params {0}", JsonConvert.SerializeObject(promotionStatus)));
+            var msg = JsonConvert.SerializeObject(promotionStatus);
+            _logger.LogInformation("Calling add_promo_status with params {msg}", msg);
 
-            var newPromoStatus = await _promoStatusService.InsertPromotionStatus(_mapper.Map<PromotionStatus>(promotionStatus));
             ServiceResponse<PromotionStatus> response = new();
+            var newPromoStatus = await _promoStatusService.InsertPromotionStatus(_mapper.Map<PromotionStatus>(promotionStatus));
 
             if (newPromoStatus.Item1 != null && newPromoStatus.Item1.Id != Guid.Empty)
             {
                 response.Data = newPromoStatus.Item1;
                 
-                _logger.LogInformation(string.Format("Success add_promo_status with params {0}", JsonConvert.SerializeObject(promotionStatus)));
+                _logger.LogInformation("Success add_promo_status with params {msg}", msg);
                 return Ok(response);
             }
             else
@@ -85,7 +86,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = newPromoStatus.Item2;
                 response.Success = false;
 
-                _logger.LogError(string.Format("Failed add_promo_status with params {0}", JsonConvert.SerializeObject(promotionStatus)));
+                _logger.LogError("Failed add_promo_status with params {msg}", msg);
                 return BadRequest(response);
             }
         }

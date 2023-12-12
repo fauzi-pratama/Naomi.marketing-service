@@ -22,14 +22,12 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("get_member")]
         public async Task<ActionResult<ServiceResponse<List<Member>>>> GetMember(string? searchName, int pageNo = 1, int pageSize = 10)
         {
+            ServiceResponse<List<Member>> response = new();
             var viewMember = await _membershipService.GetMember(searchName!, pageNo, pageSize);
-            ServiceResponse<List<Member>> response = new()
-            {
-                Data = viewMember.Item1
-            };
 
             if (viewMember != null && viewMember.Item1.Count > 0)
             {
+                response.Data = viewMember.Item1;
                 response.Pages = pageNo;
                 response.TotalPages = viewMember.Item2;
                 return Ok(response);

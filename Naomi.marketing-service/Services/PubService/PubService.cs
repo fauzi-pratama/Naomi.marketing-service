@@ -33,15 +33,16 @@ namespace Naomi.marketing_service.Services.PubService
                 {"SyncData", dataDetail}
             };
 
-            _logger.LogInformation(string.Format("attempt to publish topic {0}", CreateUpdate == "Create" ? "promo_class_created" : "promo_class_updated"));
+            var topicName = CreateUpdate == "Create" ? "promo_class_created" : "promo_class_updated";
+            _logger.LogInformation("attempt to publish topic {topicName}", topicName);
             try
             {
-                _capPublisher.Publish(CreateUpdate == "Create" ? "promo_class_created" : "promo_class_updated", data);
-                _logger.LogInformation(string.Format("Topic {0} published successfully", CreateUpdate == "Create" ? "promo_class_created" : "promo_class_updated"));
+                _capPublisher.Publish(topicName, data);
+                _logger.LogInformation("Topic {topicName} published successfully", topicName);
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format("error publish topic {0}. {1}", CreateUpdate == "Create" ? "promo_class_created" : "promo_class_updated", ex.Message));
+                _logger.LogError("error publish topic {topicName}. {ex.Message}", topicName, ex.Message);
             }
         }
 
@@ -60,15 +61,16 @@ namespace Naomi.marketing_service.Services.PubService
                 {"SyncData", dataDetail}
             };
 
-            _logger.LogInformation(string.Format("attempt to publish topic {0}", CreateUpdate == "Create" ? "promo_type_created" : "promo_type_updated"));
+            var topicName = CreateUpdate == "Create" ? "promo_type_created" : "promo_type_updated";
+            _logger.LogInformation("attempt to publish topic {topicName}", topicName);
             try
             {
-                _capPublisher.Publish(CreateUpdate == "Create" ? "promo_type_created" : "promo_type_updated", data);
-                _logger.LogInformation(string.Format("Topic {0} published successfully", CreateUpdate == "Create" ? "promo_type_created" : "promo_type_updated"));
+                _capPublisher.Publish(topicName, data);
+                _logger.LogInformation("Topic {topicName} published successfully", topicName);
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format("error publish topic {0}. {1}", CreateUpdate == "Create" ? "promo_type_created" : "promo_type_updated", ex.Message));
+                _logger.LogError("error publish topic {topicName}. {ex.Message}", topicName, ex.Message);
             }
         }
 
@@ -87,15 +89,16 @@ namespace Naomi.marketing_service.Services.PubService
                 {"SyncData", dataDetail}
             };
 
-            _logger.LogInformation(string.Format("attempt to publish topic {0}", CreateUpdate == "Create" ? "promo_created" : "promo_updated"));
+            var topicName = CreateUpdate == "Create" ? "promo_created" : "promo_updated";
+            _logger.LogInformation("attempt to publish topic {topicName}", topicName);
             try
             {
-                _capPublisher.Publish(CreateUpdate == "Create" ? "promo_created" : "promo_updated", data);
-                _logger.LogInformation(string.Format("Topic {0} published successfully", CreateUpdate == "Create" ? "promo_created" : "promo_updated"));
+                _capPublisher.Publish(topicName, data);
+                _logger.LogInformation("Topic {topicName} published successfully", topicName);
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format("error publish topic {0}. {1}", CreateUpdate == "Create" ? "promo_created" : "promo_updated", ex.Message));
+                _logger.LogError("error publish topic {topicName}. {ex.Message}", topicName, ex.Message);
             }
         }
 
@@ -114,15 +117,16 @@ namespace Naomi.marketing_service.Services.PubService
                 {"SyncData", dataDetail}
             };
 
-            _logger.LogInformation(string.Format("attempt to publish topic {0}", "promo_email_user"));
+            var topicName = "promo_email_user";
+            _logger.LogInformation("attempt to publish topic {topicName}", topicName);
             try
             {
-                _capPublisher.Publish("promo_email_user", data);
-                _logger.LogInformation(string.Format("Topic {0} published successfully", "promo_email_user"));
+                _capPublisher.Publish(topicName, data);
+                _logger.LogInformation("Topic {topicName} published successfully", topicName);
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format("error publish topic {0}. {1}", "promo_email_user", ex.Message));
+                _logger.LogError("error publish topic {topicName}. {ex.Message}", topicName, ex.Message);
             }
         }
     }

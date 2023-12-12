@@ -166,6 +166,8 @@ namespace Naomi.marketing_service.Services.SapService
                             CompanyDescription = item.companyDescription,
                             CreatedBy = "System Initial",
                             CreatedDate = DateTime.UtcNow,
+                            UpdatedBy = "System Initial",
+                            UpdatedDate = DateTime.UtcNow,
                             ActiveFlag = true
                         };
 
@@ -254,6 +256,8 @@ namespace Naomi.marketing_service.Services.SapService
                                 SiteDescription = loopSite.siteDescription,
                                 CreatedBy = "System Initial",
                                 CreatedDate = DateTime.UtcNow,
+                                UpdatedBy = "System Initial",
+                                UpdatedDate = DateTime.UtcNow,
                                 ActiveFlag = true
                             };
 
@@ -280,6 +284,8 @@ namespace Naomi.marketing_service.Services.SapService
                                 ZoneName = loopZone,
                                 CreatedBy = "System Initial",
                                 CreatedDate = DateTime.UtcNow,
+                                UpdatedBy = "System Initial",
+                                UpdatedDate = DateTime.UtcNow,
                                 ActiveFlag = true
                             };
 
@@ -340,6 +346,9 @@ namespace Naomi.marketing_service.Services.SapService
                         MopCode = loopDataMopResponse.mopCode!.Trim().ToUpper(),
                         MopName = loopDataMopResponse.mopName,
                         CreatedDate = DateTime.UtcNow,
+                        CreatedBy = "System Initial",
+                        UpdatedDate = DateTime.UtcNow,
+                        UpdatedBy = "System Initial",
                         ActiveFlag = true,
                     };
 
@@ -352,6 +361,123 @@ namespace Naomi.marketing_service.Services.SapService
             await _dbContext.SaveChangesAsync();
 
             return true;
+        }
+        #endregion
+
+        #region ConsumeSapData
+        public async Task InsertCompany(SiteMessage msg)
+        {
+            CompanyViewModel newCompany = new();
+
+            if (!string.IsNullOrEmpty(msg.company_code))
+            {
+                //check if exist
+                newCompany = _dbContext.CompanyViewModel.Where(x => x.CompanyCode!.Trim().ToUpper() == msg.company_code.Trim().ToUpper()).FirstOrDefault() ?? new CompanyViewModel();
+
+                newCompany.CompanyCode = msg.company_code.Trim().ToUpper();
+                newCompany.CompanyDescription = msg.company_description;
+                newCompany.UpdatedDate = DateTime.UtcNow;
+                newCompany.UpdatedBy = "Consumer Sap Data";
+
+                if (newCompany == null || newCompany.Id == Guid.Empty)
+                {
+                    newCompany!.Id = Guid.NewGuid();
+                    newCompany.ActiveFlag = true;
+                    newCompany.CreatedDate = DateTime.UtcNow;
+                    newCompany.CreatedBy = "Consumer Sap Data";
+                    _dbContext.CompanyViewModel.Add(newCompany);
+                }
+
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+        public async Task InsertSite(SiteMessage msg)
+        {
+            SiteViewModel newSite = new();
+
+            if (!string.IsNullOrEmpty(msg.site_code) && !string.IsNullOrEmpty(msg.pricing_zone) && !string.IsNullOrEmpty(msg.company_code))
+            {
+                //check if exist
+                newSite = _dbContext.SiteViewModel.Where(x => x.CompanyCode!.Trim().ToUpper() == msg.company_code!.Trim().ToUpper() &&
+                                                              x.ZoneCode!.Trim().ToUpper() == msg.pricing_zone!.Trim().ToUpper() &&
+                                                              x.SiteCode!.Trim().ToUpper() == msg.site_code!.Trim().ToUpper()).FirstOrDefault() ?? new SiteViewModel();
+
+                newSite.CompanyCode = msg.company_code!.Trim().ToUpper();
+                newSite.ZoneCode = msg.pricing_zone!.Trim().ToUpper();
+                newSite.SiteCode = msg.site_code!.Trim().ToUpper();
+                newSite.SiteDescription = msg.site_description;
+                newSite.UpdatedDate = DateTime.UtcNow;
+                newSite.UpdatedBy = "Consumer Sap Data";
+
+                if (newSite == null || newSite.Id == Guid.Empty)
+                {
+                    newSite!.Id = Guid.NewGuid();
+                    newSite.ActiveFlag = true;
+                    newSite.CreatedDate = DateTime.UtcNow;
+                    newSite.CreatedBy = "Consumer Sap Data";
+                    _dbContext.SiteViewModel.Add(newSite);
+                }
+
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+        public async Task InsertZone(SiteMessage msg)
+        {
+            ZoneViewModel newZone = new();
+
+            if (!string.IsNullOrEmpty(msg.pricing_zone) && !string.IsNullOrEmpty(msg.company_code))
+            {
+                //check if exist
+                newZone = _dbContext.ZoneViewModel.Where(x => x.CompanyCode!.Trim().ToUpper() == msg.company_code!.Trim().ToUpper() &&
+                                                              x.ZoneCode!.Trim().ToUpper() == msg.pricing_zone!.Trim().ToUpper()).FirstOrDefault() ?? new ZoneViewModel();
+
+                newZone.CompanyCode = msg.company_code!.Trim().ToUpper();
+                newZone.ZoneCode = msg.pricing_zone!.Trim().ToUpper();
+                newZone.ZoneName = msg.pricing_zone!.Trim().ToUpper();
+                newZone.UpdatedDate = DateTime.UtcNow;
+                newZone.UpdatedBy = "Consumer Sap Data";
+
+                if (newZone == null || newZone.Id == Guid.Empty)
+                {
+                    newZone!.Id = Guid.NewGuid();
+                    newZone.ActiveFlag = true;
+                    newZone.CreatedDate = DateTime.UtcNow;
+                    newZone.CreatedBy = "Consumer Sap Data";
+                    _dbContext.ZoneViewModel.Add(newZone);
+                }
+
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+        public async Task InsertMop(MopMessage msg)
+        {
+            MopViewModel newMop = new();
+
+            if (!string.IsNullOrEmpty(msg.mop_code) && !string.IsNullOrEmpty(msg.site_code) && !string.IsNullOrEmpty(msg.sales_organization_code))
+            {
+                //check if exist
+                newMop = _dbContext.MopViewModel.Where(x => x.CompanyCode!.Trim().ToUpper() == msg.sales_organization_code!.Trim().ToUpper() &&
+                                                            x.SiteCode!.Trim().ToUpper() == msg.site_code!.Trim().ToUpper() &&
+                                                            x.MopCode!.Trim().ToUpper() == msg.mop_code!.Trim().ToUpper()).FirstOrDefault() ?? new MopViewModel();
+
+                newMop.CompanyCode = msg.sales_organization_code!.Trim().ToUpper();
+                newMop.SiteCode = msg.site_code!.Trim().ToUpper();
+                newMop.MopCode = msg.mop_code!.Trim().ToUpper();
+                newMop.MopName = msg.mop_name;
+                newMop.UpdatedDate = DateTime.UtcNow;
+                newMop.UpdatedBy = "Consumer Sap Data";
+
+                if (newMop == null || newMop.Id == Guid.Empty)
+                {
+                    newMop!.Id = Guid.NewGuid();
+                    newMop.ActiveFlag = true;
+                    newMop.CreatedDate = DateTime.UtcNow;
+                    newMop.CreatedBy = "Consumer Sap Data";
+                    _dbContext.MopViewModel.Add(newMop);
+                }
+
+                await _dbContext.SaveChangesAsync();
+            }
         }
         #endregion
     }

@@ -28,8 +28,8 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("get_promotion_material")]
         public async Task<ActionResult<ServiceResponse<List<PromotionMaterial>>>> GetPromotionMaterial(string? searchName, int pageNo = 1, int pageSize = 10)
         {
-            var promoMaterials = await _promoMaterialService.GetPromotionMaterial(searchName, pageNo, pageSize);
             ServiceResponse<List<PromotionMaterial>> response = new();
+            var promoMaterials = await _promoMaterialService.GetPromotionMaterial(searchName, pageNo, pageSize);
 
             if (promoMaterials != null && promoMaterials.Item1.Count > 0)
             {
@@ -51,16 +51,17 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPost("add_promotion_material")]
         public async Task<ActionResult<ServiceResponse<PromotionMaterial>>> AddPromotionMaterial([FromBody] PromoMaterialRequest promotionMaterial)
         {
-            _logger.LogInformation(string.Format("Calling add_promotion_material with params {0}", JsonConvert.SerializeObject(promotionMaterial)));
+            var msg = JsonConvert.SerializeObject(promotionMaterial);
+            _logger.LogInformation("Calling add_promotion_material with params {msg}", msg);
 
-            var newPromoMaterial = await _promoMaterialService.InsertPromotionMaterial(_mapper.Map<PromotionMaterial>(promotionMaterial));
             ServiceResponse<PromotionMaterial> response = new();
+            var newPromoMaterial = await _promoMaterialService.InsertPromotionMaterial(_mapper.Map<PromotionMaterial>(promotionMaterial));
 
             if (newPromoMaterial.Item1 != null && newPromoMaterial.Item1.Id != Guid.Empty)
             {
                 response.Data = newPromoMaterial.Item1;
 
-                _logger.LogInformation(string.Format("Success add_promotion_material with params {0}", JsonConvert.SerializeObject(promotionMaterial)));
+                _logger.LogInformation("Success add_promotion_material with params {msg}", msg);
                 return Ok(response);
             }
             else
@@ -68,7 +69,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = newPromoMaterial.Item2;
                 response.Success = false;
 
-                _logger.LogError(string.Format("Failed add_promotion_material with params {0}", JsonConvert.SerializeObject(promotionMaterial)));
+                _logger.LogError("Failed add_promotion_material with params {msg}", msg);
                 return BadRequest(response);
             }
         }

@@ -20,19 +20,19 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("download_s3_file_async")]
         public async Task<IActionResult> DownloadS3FileAsync(string promoId, string appCode)
         {
-            _logger.LogInformation(string.Format("Calling download_s3_file_async with promo Id: {0} and app Code: {1}", promoId, appCode));
+            _logger.LogInformation("Calling download_s3_file_async with promo Id: {promoId} and app Code: {appCode}", promoId, appCode);
 
             S3ServiceResponse<Stream> result = await _s3Service.DownloadS3FileAsync(promoId, appCode);
 
             if (result.response_code == "200")
             {
-                _logger.LogInformation(string.Format("Success download_s3_file_async with promo Id: {0} and app Code: {1}", promoId, appCode));
+                _logger.LogInformation("Success download_s3_file_async with promo Id: {promoId} and app Code: {appCode}", promoId, appCode);
 
                 /* response_message digunakan untuk menampung contentType, filePath digunakan untuk menampung filename + extension */
                 return File(result.data!, result.response_message!, result.file_path);
             }
 
-            _logger.LogError(string.Format("Failed download_s3_file_async with promo Id: {0} and app Code: {1}", promoId, appCode));
+            _logger.LogError("Failed download_s3_file_async with promo Id: {promoId} and app Code: {appCode}", promoId, appCode);
             return NotFound(result);
         }
         #endregion

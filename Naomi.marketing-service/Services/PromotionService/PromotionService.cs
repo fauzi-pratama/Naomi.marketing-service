@@ -14,8 +14,10 @@ using Newtonsoft.Json;
 using static Naomi.marketing_service.Models.Request.PromotionDetailRequest;
 using static Naomi.marketing_service.Models.Response.PromotionHeaderResponse;
 using System.Linq.Dynamic.Core;
-using Naomi.marketing_service.Services.PromoAppService;
 using Naomi.marketing_service.Services.ApprovalService;
+using static Naomi.marketing_service.Models.Request.EntertainBudgetRequest;
+using DotNetCore.CAP;
+using Naomi.marketing_service.Services.EntertainService;
 
 namespace Naomi.marketing_service.Services.PromotionService
 {
@@ -30,6 +32,7 @@ namespace Naomi.marketing_service.Services.PromotionService
         private readonly IPubService _pubService;
         private readonly IApprovalService _approvalService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+
         public PromotionService(DataDbContext dbContext, IMapper mapper, IPromoStatusService promoStatusService, IPromoClassService promoClassService, 
             IPromoTypeService promoTypeService, IS3Service s3Service, IPubService pubService, IHttpContextAccessor httpContextAccessor,
             IApprovalService approvalService)
@@ -360,12 +363,15 @@ namespace Naomi.marketing_service.Services.PromotionService
 
             header.RequirementExp = promotionHeader.RequirementExp;
             header.ResultExp = promotionHeader.ResultExp;
-            header.MopPromoSelectionId = promotionHeader.MopPromoSelectionId;
+
+            if (!string.IsNullOrEmpty(promotionHeader.MopPromoSelectionId) && promotionHeader.MopPromoSelectionId!.Trim().ToLower() != "null" && promotionHeader.MopPromoSelectionId!.Trim().ToLower() != "string")
+                header.MopPromoSelectionId = promotionHeader.MopPromoSelectionId;
 
             if (!string.IsNullOrEmpty(promotionHeader.MopPromoSelectionCode) && promotionHeader.MopPromoSelectionCode!.Trim().ToLower() != "null" && promotionHeader.MopPromoSelectionCode!.Trim().ToLower() != "string")
                 header.MopPromoSelectionCode = promotionHeader.MopPromoSelectionCode;
 
-            header.MopPromoSelectionName = promotionHeader.MopPromoSelectionName;
+            if (!string.IsNullOrEmpty(promotionHeader.MopPromoSelectionName) && promotionHeader.MopPromoSelectionName!.Trim().ToLower() != "null" && promotionHeader.MopPromoSelectionName!.Trim().ToLower() != "string")
+                    header.MopPromoSelectionName = promotionHeader.MopPromoSelectionName;
 
             if (!string.IsNullOrEmpty(promotionHeader.NipEntertain) && promotionHeader.NipEntertain!.Trim().ToLower() != "null" && promotionHeader.NipEntertain!.Trim().ToLower() != "string")
                 header.NipEntertain = promotionHeader.NipEntertain;
@@ -379,8 +385,8 @@ namespace Naomi.marketing_service.Services.PromotionService
                 header.MaxDisc = promotionHeader.MaxDisc;
 
             header.MinTransaction = promotionHeader.MinTransaction == null ? 0 : (double)promotionHeader.MinTransaction!;
-            header.MemberOnly = promotionHeader.MemberOnly == null ? false : (bool)promotionHeader.MemberOnly!;
-            header.NewMember = promotionHeader.NewMember == null ? false : (bool)promotionHeader.NewMember!;
+            header.MemberOnly = promotionHeader.MemberOnly != null && (bool)promotionHeader.MemberOnly!;
+            header.NewMember = promotionHeader.NewMember != null && (bool)promotionHeader.NewMember!;
             header.Members = promotionHeader.Members;
             if (!string.IsNullOrEmpty(promotionHeader.Members) && promotionHeader.Members != "[]" && promotionHeader.Members!.Trim().ToLower() != "null" && promotionHeader.Members!.Trim().ToLower() != "string")
                 header.MemberOnly = true;
@@ -496,7 +502,13 @@ namespace Naomi.marketing_service.Services.PromotionService
                 createRuleReqs = string.IsNullOrEmpty(promotionHeader.RuleReqs) ? new List<CreatePromoRuleReq>() : JsonConvert.DeserializeObject<List<CreatePromoRuleReq>>(promotionHeader.RuleReqs) ?? new List<CreatePromoRuleReq>();
 
             List<PromotionRuleRequirement> ruleRequirements = _mapper.Map<List<PromotionRuleRequirement>>(createRuleReqs);
-            ruleRequirements.ForEach(x => { x.PromotionHeaderId = newHeaderId; x.ActiveFlag = true; });
+            ruleRequirements.ForEach(x => { x.PromotionHeaderId = newHeaderId; 
+                                            x.ActiveFlag = true;
+                                            x.CreatedDate = DateTime.UtcNow; 
+                                            x.CreatedBy = promotionHeader.Username; 
+                                            x.UpdatedDate = DateTime.UtcNow; 
+                                            x.UpdatedBy = promotionHeader.Username; 
+                                          });
 
             //promotionRuleResult
             List<CreatePromoRuleResult> createRuleRess = new();
@@ -504,7 +516,13 @@ namespace Naomi.marketing_service.Services.PromotionService
                 createRuleRess = string.IsNullOrEmpty(promotionHeader.RuleRess) ? new List<CreatePromoRuleResult>() : JsonConvert.DeserializeObject<List<CreatePromoRuleResult>>(promotionHeader.RuleRess) ?? new List<CreatePromoRuleResult>();
 
             List<PromotionRuleResult> ruleResults = _mapper.Map<List<PromotionRuleResult>>(createRuleRess);
-            ruleResults.ForEach(x => { x.PromotionHeaderId = newHeaderId; x.ActiveFlag = true; });
+            ruleResults.ForEach(x => { x.PromotionHeaderId = newHeaderId;
+                                       x.ActiveFlag = true;
+                                       x.CreatedDate = DateTime.UtcNow;
+                                       x.CreatedBy = promotionHeader.Username;
+                                       x.UpdatedDate = DateTime.UtcNow;
+                                       x.UpdatedBy = promotionHeader.Username;
+                                     });
 
             //promotionRuleMopGroup
             List<MopGroup> ruleMopsCreate = new();
@@ -512,7 +530,13 @@ namespace Naomi.marketing_service.Services.PromotionService
                 ruleMopsCreate = string.IsNullOrEmpty(promotionHeader.RuleMops) ? new List<MopGroup>() : JsonConvert.DeserializeObject<List<MopGroup>>(promotionHeader.RuleMops) ?? new List<MopGroup>();
 
             List<PromotionRuleMopGroup> ruleMops = _mapper.Map<List<PromotionRuleMopGroup>>(ruleMopsCreate);
-            ruleMops.ForEach(x => { x.PromotionHeaderId = newHeaderId; x.ActiveFlag = true; });
+            ruleMops.ForEach(x => { x.PromotionHeaderId = newHeaderId;
+                                    x.ActiveFlag = true; 
+                                    x.CreatedDate = DateTime.UtcNow; 
+                                    x.CreatedBy = promotionHeader.Username; 
+                                    x.UpdatedDate = DateTime.UtcNow; 
+                                    x.UpdatedBy = promotionHeader.Username; 
+                                  });
 
             #region UploadPromotionImage
             List<PromoDisplayed> promoDisplays = new();
@@ -542,7 +566,11 @@ namespace Naomi.marketing_service.Services.PromotionService
                             AppCode = item,
                             ImageLink = uploadedFile.file_path,
                             FileName = fileName,
-                            ActiveFlag = true
+                            ActiveFlag = true,
+                            CreatedDate = DateTime.UtcNow,
+                            CreatedBy = promotionHeader.Username,
+                            UpdatedDate = DateTime.UtcNow,
+                            UpdatedBy = promotionHeader.Username
                         });
                     }
                     else
@@ -623,7 +651,13 @@ namespace Naomi.marketing_service.Services.PromotionService
                 updateRuleReqs = string.IsNullOrEmpty(promotionHeader.RuleReqs) ? new List<CreatePromoRuleReq>() : JsonConvert.DeserializeObject<List<CreatePromoRuleReq>>(promotionHeader.RuleReqs) ?? new List<CreatePromoRuleReq>();
 
             List<PromotionRuleRequirement> ruleRequirements = _mapper.Map<List<PromotionRuleRequirement>>(updateRuleReqs);
-            ruleRequirements.ForEach(x => { x.PromotionHeaderId = updatedPromoHeader.Id; x.ActiveFlag = true; });
+            ruleRequirements.ForEach(x => { x.PromotionHeaderId = updatedPromoHeader.Id;
+                                            x.ActiveFlag = true;
+                                            x.CreatedDate = DateTime.UtcNow;
+                                            x.CreatedBy = promotionHeader.Username;
+                                            x.UpdatedDate = DateTime.UtcNow;
+                                            x.UpdatedBy = promotionHeader.Username;
+                                          });
 
             //delete existing promotionRuleResult
             _dbContext.PromotionRuleResult.RemoveRange(updatedPromoHeader.PromoRuleResults!);
@@ -633,7 +667,13 @@ namespace Naomi.marketing_service.Services.PromotionService
                 updateRuleRess = string.IsNullOrEmpty(promotionHeader.RuleRess) ? new List<CreatePromoRuleResult>() : JsonConvert.DeserializeObject<List<CreatePromoRuleResult>>(promotionHeader.RuleRess) ?? new List<CreatePromoRuleResult>();
 
             List<PromotionRuleResult> ruleResults = _mapper.Map<List<PromotionRuleResult>>(updateRuleRess);
-            ruleResults.ForEach(x => { x.PromotionHeaderId = updatedPromoHeader.Id; x.ActiveFlag = true; });
+            ruleResults.ForEach(x => { x.PromotionHeaderId = updatedPromoHeader.Id;
+                                       x.ActiveFlag = true;
+                                       x.CreatedDate = DateTime.UtcNow;
+                                       x.CreatedBy = promotionHeader.Username;
+                                       x.UpdatedDate = DateTime.UtcNow;
+                                       x.UpdatedBy = promotionHeader.Username;
+                                     });
 
             updatedPromoHeader.PromoRuleRequirements = ruleRequirements;
             updatedPromoHeader.PromoRuleResults = ruleResults;
@@ -687,12 +727,16 @@ namespace Naomi.marketing_service.Services.PromotionService
                             AppCode = item,
                             ImageLink = uploadedFile.file_path,
                             FileName = fileName,
-                            ActiveFlag = true
+                            ActiveFlag = true,
+                            CreatedDate = DateTime.UtcNow,
+                            CreatedBy = promotionHeader.Username,
+                            UpdatedDate = DateTime.UtcNow,
+                            UpdatedBy = promotionHeader.Username
                         });
                     }
                     else
                     {
-                        return new Tuple<PromotionHeader, string>(new PromotionHeader(), uploadedFile.response_message);
+                        return new Tuple<PromotionHeader, string>(new PromotionHeader(), uploadedFile.response_message!);
                     }
                 }
             }
@@ -957,7 +1001,7 @@ namespace Naomi.marketing_service.Services.PromotionService
         #endregion
 
         #region SetActivePromo
-        public async Task<PromotionHeader> UpdateActivePromo(Guid promoId, bool activeFlag)
+        public async Task<PromotionHeader> UpdateActivePromo(Guid promoId, string? username, bool activeFlag)
         {
             PromotionHeader updatedPromoHeader = await GetPromotionByIdAsync(promoId);
 
@@ -993,7 +1037,9 @@ namespace Naomi.marketing_service.Services.PromotionService
                     PromotionStatusId = status.Id,
                     ActiveFlag = true,
                     CreatedDate = DateTime.UtcNow,
-                    UpdatedDate = DateTime.UtcNow
+                    CreatedBy = username,
+                    UpdatedDate = DateTime.UtcNow,
+                    UpdatedBy = username
                 };
 
                 updatedPromoHeader.PromotionStatusId = status.Id;
@@ -1016,6 +1062,7 @@ namespace Naomi.marketing_service.Services.PromotionService
             }
 
             updatedPromoHeader.UpdatedDate = DateTime.UtcNow;
+            updatedPromoHeader.UpdatedBy = username;
             
             _dbContext.PromotionHeader.Update(updatedPromoHeader);
             if (promoHistory != null && promoHistory.Id != Guid.Empty)
@@ -1401,6 +1448,110 @@ namespace Naomi.marketing_service.Services.PromotionService
                 return "Item result is required";
 
             return "";
+        }
+        #endregion
+
+        #region Bgjob PromotionStatus
+        public async Task UpdatePromotionStatusByDate()
+        {
+            List<PromotionHeader> promotionHeaders = await (from pHeader in _dbContext.Set<PromotionHeader>()
+                                                            from pStatus in _dbContext.Set<PromotionStatus>().Where(x => x.Id == pHeader.PromotionStatusId &&
+                                                                                                                        (x.PromotionStatusName!.Trim().ToUpper().Contains("SCHEDULE") ||
+                                                                                                                         x.PromotionStatusName!.Trim().ToUpper().Contains("RUN")))
+                                                            select pHeader).ToListAsync();
+            List<PromotionHistory> promoHistories = new();
+            foreach (var item in promotionHeaders)
+            {
+                PromotionStatus? status = new();
+                if (item.StartDate <= DateTime.UtcNow && item.EndDate >= DateTime.UtcNow)
+                    status = await _promoStatusService.GetPromotionStatusByNameAsync("RUN");
+
+                else if (item.StartDate > DateTime.UtcNow)
+                    status = await _promoStatusService.GetPromotionStatusByNameAsync("SCHEDULE");
+
+                else
+                    status = await _promoStatusService.GetPromotionStatusByNameAsync("EXPIRE");
+
+                if (status!.Id != Guid.Empty && item.PromotionStatusId != status.Id)
+                {
+                    promoHistories.Add(
+                        new PromotionHistory
+                        {
+                            Id = Guid.NewGuid(),
+                            PromotionHeaderId = item.Id,
+                            PromotionStatusId = status.Id,
+                            ActiveFlag = true,
+                            CreatedDate = DateTime.UtcNow,
+                            CreatedBy = "Job",
+                            UpdatedDate = DateTime.UtcNow,
+                            UpdatedBy = "Job"
+                        });
+
+                    item.PromotionStatusId = status.Id;
+                    item.UpdatedDate = DateTime.UtcNow;
+                    item.UpdatedBy = "Job";
+                }
+            }
+
+            _dbContext.PromotionHistory.AddRange(promoHistories);
+            await _dbContext.SaveChangesAsync();
+        }
+        #endregion
+
+        #region EntertainJob
+        public async Task CreatePromoEntertainAuto()
+        {
+            List<PromotionEntertain> promoEntertains = await _dbContext.PromotionEntertain.Where(x => x.ActiveFlag).ToListAsync() ?? new List<PromotionEntertain>();
+
+            foreach (var item in promoEntertains!.Select(x => x.EmployeeNIP).Distinct())
+            {
+                PromotionHeader promoHeader = await _dbContext.PromotionHeader.Where(x => x.NipEntertain! == item)
+                                                                              .Include(p => p.PromoRuleRequirements)
+                                                                              .Include(p => p.PromoRuleResults)
+                                                                              .Include(p => p.PromoRuleMops)
+                                                                              .OrderByDescending(x => x.StartDate)
+                                                                              .FirstOrDefaultAsync() ?? new PromotionHeader();
+
+                if (promoHeader != null && promoHeader.Id != Guid.Empty && promoHeader.EndDate.ToString("yyyyMM") != DateTime.UtcNow.ToString("yyyyMM"))
+                {
+                    var startDate = DateTime.Today;
+                    var endDate = new DateTime(startDate.Year, startDate.Month, 1); //DateTime.Today.AddMonths(1);
+                    endDate = endDate.AddMonths(1);
+                    endDate = endDate.AddDays(-1);
+
+                    CreatePromotion createPromo = _mapper.Map<CreatePromotion>(promoHeader);
+                    createPromo.StartDate = startDate;
+                    createPromo.EndDate = endDate;
+                    createPromo.Username = "ENTERTAINJOB";
+                    createPromo.PromotionName = promoHeader.PromotionName!.Replace(promoHeader.StartDate.ToString("MMMM yyyy").ToUpper(), startDate.ToString("MMMM yyyy").ToUpper());
+
+                    if (promoHeader.PromoRuleRequirements!.Count > 0)
+                        createPromo.RuleReqs = _mapper.Map<List<CreatePromoRuleReq>>(promoHeader.PromoRuleRequirements!).ToString();
+                    if (promoHeader.PromoRuleResults!.Count > 0)
+                        createPromo.RuleRess = _mapper.Map<List<CreatePromoRuleResult>>(promoHeader.PromoRuleResults!).ToString();
+                    if (promoHeader.PromoRuleMops!.Count > 0)
+                        createPromo.RuleMops = _mapper.Map<List<MopGroup>>(promoHeader.PromoRuleMops!).ToString();
+
+                    await CreatePromotion(createPromo);
+                }
+            }
+        }
+        public async Task PublishPromoEntertainAuto()
+        {
+            List<PromotionEntertain> promoEntertains = await _dbContext.PromotionEntertain.Where(x => x.ActiveFlag).ToListAsync() ?? new List<PromotionEntertain>();
+            foreach (var item in promoEntertains!.Select(x => x.EmployeeNIP))
+            {
+                PromotionHeader promoHeader = await _dbContext.PromotionHeader.Where(x => x.NipEntertain! == item)
+                                                                              .Include(p => p.PromoRuleRequirements)
+                                                                              .Include(p => p.PromoRuleResults)
+                                                                              .Include(p => p.PromoRuleMops)
+                                                                              .OrderByDescending(x => x.StartDate)
+                                                                              .FirstOrDefaultAsync() ?? new PromotionHeader();
+                if (promoHeader != null && promoHeader.Id != Guid.Empty && promoHeader.EndDate.ToString("yyyyMM") == DateTime.UtcNow.ToString("yyyyMM") && promoHeader.CreatedBy!.Trim().ToUpper() == "ENTERTAINJOB")
+                {
+                    await PublishPromoMessage("Create", promoHeader, promoHeader.PromoRuleRequirements!, promoHeader.PromoRuleResults!, promoHeader.PromoRuleMops!);
+                }
+            }
         }
         #endregion
     }

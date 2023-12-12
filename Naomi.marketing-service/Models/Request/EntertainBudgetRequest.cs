@@ -11,6 +11,7 @@
             public DateTime MonthYear { get; set; } = DateTime.UtcNow.Date;
             public bool? ActiveFlag { get; set; }
             public List<EmpEmail>? EmpEmails { get; set; }
+            public string? Username { get; set; }
         }
 
         public class UpdateEntertain
@@ -20,6 +21,7 @@
             public DateTime MonthYear { get; set; } = DateTime.UtcNow.Date;
             public bool? ActiveFlag { get; set; }
             public List<EmpEmail>? EmpEmails { get; set; }
+            public string? Username { get; set; }
         }
 
         public class EmpEmail

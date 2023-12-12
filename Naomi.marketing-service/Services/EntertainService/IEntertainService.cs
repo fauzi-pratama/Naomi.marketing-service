@@ -13,5 +13,10 @@ namespace Naomi.marketing_service.Services.EntertainService
         Task<Tuple<PromotionEntertain, string>> GetPromoEntertainByNIP(string? empNIP, DateTime? monthYear);
         Task<Tuple<PromotionEntertain, string>> CreateEntertain(CreateEntertain promotionEntertain);
         Task<Tuple<PromotionEntertain, string>> UpdateEntertain(UpdateEntertain updateEntertain);
+        List<PromotionEntertainEmail> SetPromoEntertainEmail(List<EmpEmail> empEmails, string? username);
+
+        #region EntertainJob
+        Task CreateEntertainBudgetAuto();
+        #endregion
     }
 }

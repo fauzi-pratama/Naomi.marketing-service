@@ -28,12 +28,12 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("get_promo_app_display")]
         public async Task<ActionResult<ServiceResponse<List<PromotionAppDisplay>>>> GetPromotionAppDisplay(string? searchName, int pageNo = 1, int pageSize = 10)
         {
-            var promoAppDisplay = await _promoAppService.GetPromotionAppDisplay(searchName, pageNo, pageSize);
             ServiceResponse<List<PromotionAppDisplay>> response = new();
+            var promoAppDisplay = await _promoAppService.GetPromotionAppDisplay(searchName, pageNo, pageSize);
 
-            response.Data = promoAppDisplay.Item1;
             if (promoAppDisplay != null && promoAppDisplay.Item1.Count > 0)
             {
+                response.Data = promoAppDisplay.Item1;
                 response.Pages = pageNo;
                 response.TotalPages = promoAppDisplay.Item2;
                 return Ok(response);
@@ -51,16 +51,17 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPost("add_promotion_app_display")]
         public async Task<ActionResult<ServiceResponse<Tuple<PromotionAppDisplay, string>>>> AddPromotionAppDisplay([FromBody] AppDisplayRequest promoAppDisplay)
         {
-            _logger.LogInformation(string.Format("Calling add_promotion_app_display with params {0}", JsonConvert.SerializeObject(promoAppDisplay)));
+            var msg = JsonConvert.SerializeObject(promoAppDisplay);
+            _logger.LogInformation("Calling add_promotion_app_display with params {msg}", msg);
 
-            var newAppDisplay = await _promoAppService.InsertPromotionAppDisplay(_mapper.Map<PromotionAppDisplay>(promoAppDisplay));
             ServiceResponse<PromotionAppDisplay> response = new();
+            var newAppDisplay = await _promoAppService.InsertPromotionAppDisplay(_mapper.Map<PromotionAppDisplay>(promoAppDisplay));
 
             if (newAppDisplay.Item1 != null && newAppDisplay.Item1.Id != Guid.Empty)
             {
                 response.Data = newAppDisplay.Item1!;
 
-                _logger.LogInformation(string.Format("Success add_promotion_app_display with params {0}", JsonConvert.SerializeObject(promoAppDisplay)));
+                _logger.LogInformation("Success add_promotion_app_display with params {msg}", msg);
                 return Ok(response);
             }
             else
@@ -68,7 +69,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = newAppDisplay.Item2;
                 response.Success = false;
 
-                _logger.LogError(string.Format("Failed add_promotion_app_display with params {0}", JsonConvert.SerializeObject(promoAppDisplay)));
+                _logger.LogError("Failed add_promotion_app_display with params {msg}", msg);
                 return BadRequest(response);
             }
         }
@@ -78,16 +79,17 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPut("edit_promotion_app_display")]
         public async Task<ActionResult<ServiceResponse<PromotionAppDisplay>>> EditPromotionAppDisplay([FromBody] AppDisplayEditRequest promoAppDisplay)
         {
-            _logger.LogInformation(string.Format("Calling edit_promotion_app_display with params {0}", JsonConvert.SerializeObject(promoAppDisplay)));
+            var msg = JsonConvert.SerializeObject(promoAppDisplay);
+            _logger.LogInformation("Calling edit_promotion_app_display with params {msg}", msg);
 
-            var updatePromoAppDisplay = await _promoAppService.UpdatePromotionAppDisplay(_mapper.Map<PromotionAppDisplay>(promoAppDisplay));
             ServiceResponse<PromotionAppDisplay> response = new();
+            var updatePromoAppDisplay = await _promoAppService.UpdatePromotionAppDisplay(_mapper.Map<PromotionAppDisplay>(promoAppDisplay));
 
             if (updatePromoAppDisplay.Item1 != null && updatePromoAppDisplay.Item1.Id != Guid.Empty)
             {
                 response.Data = updatePromoAppDisplay.Item1;
 
-                _logger.LogInformation(string.Format("Success edit_promotion_app_display with params {0}", JsonConvert.SerializeObject(promoAppDisplay)));
+                _logger.LogInformation("Success edit_promotion_app_display with params {msg}", msg);
                 return Ok(response);
             }
             else
@@ -95,7 +97,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = updatePromoAppDisplay!.Item2;
                 response.Success = false;
 
-                _logger.LogError(string.Format("Failed edit_promotion_app_display with params {0}", JsonConvert.SerializeObject(promoAppDisplay)));
+                _logger.LogError("Failed edit_promotion_app_display with params {msg}", msg);
                 return BadRequest(response);
             }
         }

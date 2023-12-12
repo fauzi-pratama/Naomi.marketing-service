@@ -23,14 +23,12 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("get_company")]
         public async Task<ActionResult<ServiceResponse<List<CompanyViewModel>>>> GetCompanyViewModel(string? searchName, int pageNo = 1, int pageSize = 10)
         {
+            ServiceResponse<List<CompanyViewModel>> response = new();
             var companyViewModel = await _sapService.GetCompanyViewModel(searchName, pageNo, pageSize);
-            ServiceResponse<List<CompanyViewModel>> response = new()
-            {
-                Data = companyViewModel.Item1
-            };
 
             if (companyViewModel != null && companyViewModel.Item1.Count > 0)
             {
+                response.Data = companyViewModel.Item1;
                 response.Pages = pageNo;
                 response.TotalPages = companyViewModel.Item2;
                 return Ok(response);
@@ -47,13 +45,11 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         public async Task<ActionResult<ServiceResponse<List<SiteViewModel>>>> GetSiteViewModel([FromQuery] string? companyCode, List<string>? zoneList, string? searchName, int pageNo = 1, int pageSize = 10)
         {
             var siteViewModel = await _sapService.GetSiteViewModel(companyCode, zoneList, searchName, pageNo, pageSize);
-            ServiceResponse<List<SiteViewModel>> response = new()
-            {
-                Data = siteViewModel.Item1
-            };
+            ServiceResponse<List<SiteViewModel>> response = new();
 
             if (siteViewModel != null && siteViewModel.Item1.Count > 0)
             {
+                response.Data = siteViewModel.Item1;
                 response.Pages = pageNo;
                 response.TotalPages = siteViewModel.Item2;
                 return Ok(response);
@@ -69,14 +65,12 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("get_zone")]
         public async Task<ActionResult<ServiceResponse<List<ZoneViewModel>>>> GetZoneViewModel(string? companyCode, string? searchName, int pageNo = 1, int pageSize = 10)
         {
+            ServiceResponse<List<ZoneViewModel>> response = new();
             var zoneViewModel = await _sapService.GetZoneViewModel(companyCode, searchName, pageNo, pageSize);
-            ServiceResponse<List<ZoneViewModel>> response = new()
-            {
-                Data = zoneViewModel.Item1
-            };
 
             if (zoneViewModel != null && zoneViewModel.Item1.Count > 0)
             {
+                response.Data = zoneViewModel.Item1;
                 response.Pages = pageNo;
                 response.TotalPages = zoneViewModel.Item2;
                 return Ok(response);
@@ -93,13 +87,11 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         public async Task<ActionResult<ServiceResponse<List<MopViewModel>>>> GetMopViewModel(string? companyCode, string? siteCode, string? searchName, bool isPromotion = false, int pageNo = 1, int pageSize = 10)
         {
             var mopViewModel = await _sapService.GetMopViewModel(companyCode, siteCode, searchName, isPromotion, pageNo, pageSize);
-            ServiceResponse<List<MopViewModel>> response = new()
-            {
-                Data = mopViewModel.Item1
-            };
+            ServiceResponse<List<MopViewModel>> response = new();
 
             if (mopViewModel != null && mopViewModel.Item1.Count > 0)
             {
+                response.Data = mopViewModel.Item1;
                 response.Pages = pageNo;
                 response.TotalPages = mopViewModel.Item2;
                 return Ok(response);
@@ -117,15 +109,16 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPut("Set_mop_is_promotion")]
         public async Task<ActionResult<ServiceResponse<MopViewModel>>> SetMopIsPromotion(Guid mopId, bool isPromotion = true)
         {
-            _logger.LogInformation(string.Format("Calling Set_mop_is_promotion with Mop Id: {0} and isPromotion: {1}", mopId, isPromotion));
+            _logger.LogInformation("Calling Set_mop_is_promotion with Mop Id: {mopId} and isPromotion: {isPromotion}", mopId, isPromotion);
 
             ServiceResponse<MopViewModel> response = new();
             var mopViewModel = await _sapService.SetMopIsPromotion(mopId, isPromotion);
+
             if (mopViewModel.Item1 != null && mopViewModel.Item1.Id != Guid.Empty)
             {
                 response.Data = mopViewModel.Item1!;
 
-                _logger.LogInformation(string.Format("Success Set_mop_is_promotion with Mop Id: {0} and isPromotion: {1}", mopId, isPromotion));
+                _logger.LogInformation("Success Set_mop_is_promotion with Mop Id: {mopId} and isPromotion: {isPromotion}", mopId, isPromotion);
                 return Ok(response);
             }
             else
@@ -133,7 +126,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = mopViewModel.Item2 == "" ? "Data Not Found" : mopViewModel.Item2;
                 response.Success = false;
 
-                _logger.LogInformation(string.Format("Failed Set_mop_is_promotion with Mop Id: {0} and isPromotion: {1}", mopId, isPromotion));
+                _logger.LogInformation("Failed Set_mop_is_promotion with Mop Id: {mopId} and isPromotion: {isPromotion}", mopId, isPromotion);
                 return BadRequest(response);
             }
         }

@@ -28,9 +28,9 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("get_approval_mapping")]
         public async Task<ActionResult<ServiceResponse<Tuple<List<ApprovalMappingView>, string>>>> GetApprovalMapping(Guid? companyId, string? companyCode)
         {
-            var apprvMapping = await _approvalService.GetApprovalMapping(companyId, companyCode);
             ServiceResponse<List<ApprovalMappingView>> response = new();
-
+            var apprvMapping = await _approvalService.GetApprovalMapping(companyId, companyCode);
+            
             if (apprvMapping != null && apprvMapping.Item1.Count > 0)
             {
                 response.Data = apprvMapping.Item1;
@@ -49,6 +49,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         {
             ServiceResponse<ApprovalMappingView> response = new();
             var apprvMapping = await _approvalService.GetApprovalMappingById(approvalMappingId);
+
             if (apprvMapping.Item1 != null && apprvMapping.Item1.Id != null && apprvMapping.Item1!.Id != Guid.Empty)
             {
                 response.Data = apprvMapping.Item1;
@@ -67,17 +68,18 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPost("add_approval_mapping")]
         public async Task<ActionResult<ServiceResponse<Tuple<ApprovalMappingView, string>>>> AddApprovalMapping([FromBody] CreateApprovalMapping createApprovalMapping)
         {
-            _logger.LogInformation(string.Format("Calling add_approval_mapping with params {0}", JsonConvert.SerializeObject(createApprovalMapping)));
+            var msg = JsonConvert.SerializeObject(createApprovalMapping);
+            _logger.LogInformation("Calling add_approval_mapping with params {msg}", msg);
 
-            var newApprovalMappings = await _approvalService.InsertApprovalMapping(_mapper.Map<ApprovalMappingView>(createApprovalMapping));
             ServiceResponse<ApprovalMappingView> response = new();
-
+            var newApprovalMappings = await _approvalService.InsertApprovalMapping(_mapper.Map<ApprovalMappingView>(createApprovalMapping));
+            
             if (newApprovalMappings.Item1 != null && newApprovalMappings.Item1.Id != Guid.Empty)
             {
                 response.Data = newApprovalMappings.Item1;
                 response.Message = newApprovalMappings.Item2;
 
-                _logger.LogInformation(string.Format("Success add_approval_mapping with params {0}", JsonConvert.SerializeObject(createApprovalMapping)));
+                _logger.LogInformation("Success add_approval_mapping with params {msg}", msg);
                 return Ok(response);
             }
             else
@@ -85,7 +87,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = newApprovalMappings!.Item2;
                 response.Success = false;
 
-                _logger.LogError(string.Format("Failed add_approval_mapping with params {0}", JsonConvert.SerializeObject(createApprovalMapping)));
+                _logger.LogError("Failed add_approval_mapping with params {msg}", msg);
                 return BadRequest(response);
             }
         }
@@ -95,16 +97,17 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPut("edit_approval_mapping")]
         public async Task<ActionResult<ServiceResponse<ApprovalMappingView>>> EditApprovalMapping([FromBody] UpdateApprovalMapping approvalUpdate)
         {
-            _logger.LogInformation(string.Format("Calling edit_approval_mapping with params {0}", JsonConvert.SerializeObject(approvalUpdate)));
+            var msg = JsonConvert.SerializeObject(approvalUpdate);
+            _logger.LogInformation("Calling edit_approval_mapping with params {msg}", msg);
 
-            var updateApproval = await _approvalService.UpdateApprovalMapping(_mapper.Map<ApprovalMappingView>(approvalUpdate));
             ServiceResponse<ApprovalMappingView> response = new();
-
+            var updateApproval = await _approvalService.UpdateApprovalMapping(_mapper.Map<ApprovalMappingView>(approvalUpdate));
+            
             if (updateApproval.Item1 != null && updateApproval.Item1.Id != Guid.Empty)
             {
                 response.Data = updateApproval.Item1;
 
-                _logger.LogInformation(string.Format("Success edit_approval_mapping with params {0}", JsonConvert.SerializeObject(approvalUpdate)));
+                _logger.LogInformation("Success edit_approval_mapping with params {msg}", msg);
                 return Ok(response);
             }
             else
@@ -112,7 +115,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = updateApproval.Item2;
                 response.Success = false;
 
-                _logger.LogError(string.Format("Failed edit_approval_mapping with params {0}", JsonConvert.SerializeObject(approvalUpdate)));
+                _logger.LogError("Failed edit_approval_mapping with params {msg}", msg);
                 return BadRequest(response);
             }
         }
@@ -122,16 +125,17 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPost("generate_approval_status")]
         public async Task<ActionResult<ServiceResponse<List<PromotionApproval>>>> GenerateApprovalStatus([FromBody] GeneratePromoApproval request)
         {
-            _logger.LogInformation(string.Format("Calling generate_approval_status with params {0}", JsonConvert.SerializeObject(request)));
+            var msg = JsonConvert.SerializeObject(request);
+            _logger.LogInformation("Calling generate_approval_status with params {msg}", msg);
 
-            List<PromotionApproval> newPromoApprovalStatuses = await _approvalService.GeneratePromoApproval(request);
             ServiceResponse<List<PromotionApproval>> response = new();
-
+            List<PromotionApproval> newPromoApprovalStatuses = await _approvalService.GeneratePromoApproval(request);
+            
             if (newPromoApprovalStatuses != null)
             {
                 response.Data = newPromoApprovalStatuses;
 
-                _logger.LogInformation(string.Format("Success generate_approval_status with params {0}", JsonConvert.SerializeObject(request)));
+                _logger.LogInformation("Success generate_approval_status with params {msg}", msg);
                 return Ok(response);
             }
             else
@@ -139,7 +143,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = "";
                 response.Success = false;
 
-                _logger.LogInformation(string.Format("Failed generate_approval_status with params {0}", JsonConvert.SerializeObject(request)));
+                _logger.LogInformation("Failed generate_approval_status with params {msg}", msg);
                 return BadRequest(response);
             }
         }

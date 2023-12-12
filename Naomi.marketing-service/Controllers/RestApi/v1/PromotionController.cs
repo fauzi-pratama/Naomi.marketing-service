@@ -30,14 +30,12 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("get_data")]
         public async Task<ActionResult<ServiceResponse<List<PromotionListView>>>> GetPromotionList([FromQuery] PromotionListRequest promoRequest)
         {
+            ServiceResponse<List<PromotionListView>> response = new();
             var promoList = await _promoService.GetPromotionListAsync(promoRequest.OrderColumn!, promoRequest.OrderMethod!, promoRequest.PageNo, promoRequest.PageSize, promoRequest.Search);
-            ServiceResponse<List<PromotionListView>> response = new()
-            {
-                Data = promoList.Item1
-            };
     
             if (promoList != null && promoList.Item1.Count > 0)
             {
+                response.Data = promoList.Item1;
                 response.Pages = promoRequest.PageNo;
                 response.TotalPages = promoList.Item2;
                 return Ok(response);
@@ -82,13 +80,11 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         public async Task<ActionResult<ServiceResponse<List<PromotionListView>>>> GetPromotionApprovalList([FromQuery] PromotionListRequest promoRequest, string userId)
         {
             var promoApprovalList = await _promoService.GetPromotionApprovalListAsync(userId, promoRequest.OrderColumn!, promoRequest.OrderMethod!, promoRequest.PageNo, promoRequest.PageSize, promoRequest.Search);
-            ServiceResponse<List<PromotionListView>> response = new()
-            {
-                Data = promoApprovalList.Item1
-            };
+            ServiceResponse<List<PromotionListView>> response = new();
 
             if (promoApprovalList != null && promoApprovalList.Item1.Count > 0)
             {
+                response.Data = promoApprovalList.Item1;
                 response.Pages = promoRequest.PageNo;
                 response.TotalPages = promoApprovalList.Item2;
                 return Ok(response);
@@ -106,7 +102,8 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPost("add_promo")]
         public async Task<ActionResult<ServiceResponse<Tuple<PromotionHeader, string>>>> CreatePromotion([FromForm] CreatePromotion createPromotion)
         {
-            _logger.LogInformation(string.Format("Calling add_promo with params {0}", JsonConvert.SerializeObject(createPromotion)));
+            var msg = JsonConvert.SerializeObject(createPromotion);
+            _logger.LogInformation("Calling add_promo with params {msg}", msg);
 
             ServiceResponse<PromotionHeader> response = new();
 
@@ -115,7 +112,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = "Please check your data again";
                 response.Success = false;
 
-                _logger.LogInformation(string.Format("Failed calling add_promo with params {0}", JsonConvert.SerializeObject(createPromotion)));
+                _logger.LogInformation("Failed calling add_promo with params {msg}", msg);
                 return BadRequest(response);
             }
             else
@@ -125,7 +122,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 {
                     response.Data = newPromo.Item1;
 
-                    _logger.LogInformation(string.Format("Success add_promo with params {0}", JsonConvert.SerializeObject(createPromotion)));
+                    _logger.LogInformation("Success add_promo with params {msg}", msg);
                     return Ok(response);
                 }
                 else
@@ -133,7 +130,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                     response.Message = newPromo.Item2;
                     response.Success = false;
 
-                    _logger.LogError(string.Format("Failed add_promo with params {0}", JsonConvert.SerializeObject(createPromotion)));
+                    _logger.LogError("Failed add_promo with params {msg}", msg);
                     return BadRequest(response);
                 }
             }
@@ -144,7 +141,8 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPut("edit_promo")]
         public async Task<ActionResult<ServiceResponse<Tuple<PromotionHeader, string>>>> UpdatePromotion([FromForm] UpdatePromotion promoUpdate)
         {
-            _logger.LogInformation(string.Format("Calling add_promo with params {0}", JsonConvert.SerializeObject(promoUpdate)));
+            var msg = JsonConvert.SerializeObject(promoUpdate);
+            _logger.LogInformation("Calling add_promo with params {msg}", msg);
 
             ServiceResponse<PromotionHeader> response = new();
             if (promoUpdate == null)
@@ -152,7 +150,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = "Please check your data again";
                 response.Success = false;
 
-                _logger.LogInformation(string.Format("Failed calling add_promo with params {0}", JsonConvert.SerializeObject(promoUpdate)));
+                _logger.LogInformation("Failed calling add_promo with params {msg}", msg);
                 return BadRequest(response);
             }
             else
@@ -164,7 +162,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                     response.Data = updatePromo.Item1;
                     response.Message = updatePromo.Item2;
 
-                    _logger.LogInformation(string.Format("Success add_promo with params {0}", JsonConvert.SerializeObject(promoUpdate)));
+                    _logger.LogInformation("Success add_promo with params {msg}", msg);
                     return Ok(response);
                 }
                 else
@@ -172,7 +170,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                     response.Message = updatePromo.Item2;
                     response.Success = false;
 
-                    _logger.LogError(string.Format("Failed add_promo with params {0}", JsonConvert.SerializeObject(promoUpdate)));
+                    _logger.LogError("Failed add_promo with params {msg}", msg);
                     return BadRequest(response);
                 }
             }
@@ -181,9 +179,9 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
 
         #region SetActiveInactive
         [HttpPut("set_active_promo")]
-        public async Task<ActionResult<ServiceResponse<PromotionHeader>>> SetActivePromo(Guid promoId, bool activeFlag = true)
+        public async Task<ActionResult<ServiceResponse<PromotionHeader>>> SetActivePromo(Guid promoId, string? username, bool activeFlag = true)
         {
-            _logger.LogInformation(string.Format("Calling set_active_promo with promo Id: {0} and activeFlag: {1}", promoId, activeFlag));
+            _logger.LogInformation("Calling set_active_promo with promo Id: {promoId} and activeFlag: {activeFlag}", promoId, activeFlag);
 
             ServiceResponse<PromotionHeader> response = new();
             if (promoId == Guid.Empty)
@@ -191,17 +189,17 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = "Promotion Id is required";
                 response.Success = false;
 
-                _logger.LogInformation(string.Format("Failed calling set_active_promo with promo Id: {0} and activeFlag: {1}", promoId, activeFlag));
+                _logger.LogInformation("Failed calling set_active_promo with promo Id: {promoId} and activeFlag: {activeFlag}", promoId, activeFlag);
                 return BadRequest(response);
             }
             else
             {
-                PromotionHeader promoHeader = await _promoService.UpdateActivePromo(promoId, activeFlag);
+                PromotionHeader promoHeader = await _promoService.UpdateActivePromo(promoId, username, activeFlag);
                 if (promoHeader != null && promoHeader.Id != Guid.Empty)
                 {
                     response.Data = promoHeader;
 
-                    _logger.LogInformation(string.Format("Success set_active_promo with promo Id: {0} and activeFlag: {1}", promoId, activeFlag));
+                    _logger.LogInformation("Success set_active_promo with promo Id: {promoId} and activeFlag: {activeFlag}", promoId, activeFlag);
                     return Ok(response);
                 }
                 else
@@ -209,7 +207,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                     response.Message = "";
                     response.Success = false;
 
-                    _logger.LogInformation(string.Format("Failed set_active_promo with promo Id: {0} and activeFlag: {1}", promoId, activeFlag));
+                    _logger.LogInformation("Failed set_active_promo with promo Id: {promoId} and activeFlag: {activeFlag}", promoId, activeFlag);
                     return BadRequest(response);
                 }
             }
@@ -221,7 +219,8 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPut("approve_reject_promotion")]
         public async Task<ActionResult<ServiceResponse<Tuple<PromotionApprovalDetail, string>>>> ApproveRejectPromotion([FromQuery] ApproveRejectPromotion approvalStatus)
         {
-            _logger.LogInformation(string.Format("Calling approve_reject_promotion with params {0}", JsonConvert.SerializeObject(approvalStatus)));
+            var msg = JsonConvert.SerializeObject(approvalStatus);
+            _logger.LogInformation("Calling approve_reject_promotion with params {msg}", msg);
 
             ServiceResponse<PromotionApprovalDetail> response = new();
             if (approvalStatus == null)
@@ -229,7 +228,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = "Please check your data again";
                 response.Success = false;
 
-                _logger.LogError(string.Format("Failed calling approve_reject_promotion with params {0}", JsonConvert.SerializeObject(approvalStatus)));
+                _logger.LogError("Failed calling approve_reject_promotion with params {msg}", msg);
                 return BadRequest(response);
             }
             else
@@ -239,7 +238,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 {
                     response.Data = approvalMapping.Item1!;
 
-                    _logger.LogInformation(string.Format("Success approve_reject_promotion with params {0}", JsonConvert.SerializeObject(approvalStatus)));
+                    _logger.LogInformation("Success approve_reject_promotion with params {msg}", msg);
                     return Ok(response);
                 }
                 else
@@ -247,7 +246,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                     response.Message = approvalMapping.Item2;
                     response.Success = false;
 
-                    _logger.LogError(string.Format("Failed approve_reject_promotion with params {0}", JsonConvert.SerializeObject(approvalStatus)));
+                    _logger.LogError("Failed approve_reject_promotion with params {msg}", msg);
                     return BadRequest(response);
                 }
             }

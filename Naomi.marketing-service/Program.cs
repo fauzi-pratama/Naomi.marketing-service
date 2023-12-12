@@ -82,6 +82,10 @@ builder.Services.AddScoped<IPubService, PubService>();
 builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<ISapService, SapService>();
 
+//Background Job
+builder.Services.AddHostedService<EntertainJob>();
+builder.Services.AddHostedService<PromotionStatusJob>();
+
 //Config Automapper
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 

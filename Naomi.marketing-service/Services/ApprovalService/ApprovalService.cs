@@ -233,7 +233,7 @@ namespace Naomi.marketing_service.Services.ApprovalService
 
                 if (request.PromotionHeaderId != Guid.Empty)
                 {
-                    promoApprovals.Add(SetPromoApprovalHeader(headerId, approvalMapping.Id, request.PromotionHeaderId));
+                    promoApprovals.Add(SetPromoApprovalHeader(headerId, approvalMapping.Id, request.PromotionHeaderId, request.Username!));
                     promoApprvDetails.AddRange(SetPromoApprovalDetail(approvalMappingDetails, headerId));
                 }
                 else
@@ -243,7 +243,7 @@ namespace Naomi.marketing_service.Services.ApprovalService
                     foreach (PromotionHeader promoHeader in promotionHeaders)
                     {
                         headerId = Guid.NewGuid();
-                        promoApprovals.Add(SetPromoApprovalHeader(headerId, approvalMapping.Id, promoHeader.Id));
+                        promoApprovals.Add(SetPromoApprovalHeader(headerId, approvalMapping.Id, promoHeader.Id, request.Username!));
                         promoApprvDetails.AddRange(SetPromoApprovalDetail(approvalMappingDetails, headerId));
 
                         //set promo status back to draft
@@ -264,6 +264,8 @@ namespace Naomi.marketing_service.Services.ApprovalService
                         }
 
                         promoHeader.PromotionStatusId = statusDraft!.Id;
+                        promoHeader.UpdatedBy = promoHeader.Username;
+                        promoHeader.UpdatedDate = DateTime.UtcNow;
                         _dbContext.PromotionHeader.Update(promoHeader);
                     }
                 }
@@ -276,7 +278,7 @@ namespace Naomi.marketing_service.Services.ApprovalService
 
             return promoApprovals;
         }
-        public PromotionApproval SetPromoApprovalHeader(Guid promoApprId, Guid apprvMapId, Guid promoHeaderId)
+        public PromotionApproval SetPromoApprovalHeader(Guid promoApprId, Guid apprvMapId, Guid promoHeaderId, string? username)
         {
             PromotionApproval newPromoApproval = new()
             {
@@ -285,7 +287,9 @@ namespace Naomi.marketing_service.Services.ApprovalService
                 PromotionHeaderId = promoHeaderId,
                 ActiveFlag = true,
                 CreatedDate = DateTime.UtcNow,
-                UpdatedDate = DateTime.UtcNow
+                CreatedBy = username,
+                UpdatedDate = DateTime.UtcNow,
+                UpdatedBy = username
             };
 
             return newPromoApproval;

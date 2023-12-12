@@ -30,8 +30,8 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("get_promotion_channel")]
         public async Task<ActionResult<ServiceResponse<List<PromotionChannel>>>> GetPromotionChannel(string? searchName, int pageNo = 1, int pageSize = 10)
         {
-            var promoChannels = await _promoChannelService.GetPromotionChannel(searchName!, pageNo, pageSize);
             ServiceResponse<List<PromotionChannel>> response = new();
+            var promoChannels = await _promoChannelService.GetPromotionChannel(searchName!, pageNo, pageSize);
 
             if (promoChannels != null && promoChannels.Item1.Count > 0)
             {
@@ -53,16 +53,17 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPost("add_promotion_channel")]
         public async Task<ActionResult<ServiceResponse<PromotionChannel>>> AddPromotionChannel([FromBody] PromoChannelRequest promotionChannel)
         {
-            _logger.LogInformation(string.Format("Calling add_promotion_channel with params {0}", JsonConvert.SerializeObject(promotionChannel)));
+            var msg = JsonConvert.SerializeObject(promotionChannel);
+            _logger.LogInformation("Calling add_promotion_channel with params {msg}", msg);
 
-            var newPromoChannel = await _promoChannelService.InsertPromotionChannel(_mapper.Map<PromotionChannel>(promotionChannel));
             ServiceResponse<PromotionChannel> response = new();
+            var newPromoChannel = await _promoChannelService.InsertPromotionChannel(_mapper.Map<PromotionChannel>(promotionChannel));
 
             if (newPromoChannel.Item1 != null && newPromoChannel.Item1.Id != Guid.Empty)
             {
                 response.Data = newPromoChannel.Item1;
 
-                _logger.LogInformation(string.Format("Success add_promotion_channel with params {0}", JsonConvert.SerializeObject(promotionChannel)));
+                _logger.LogInformation("Success add_promotion_channel with params {msg}", msg);
                 return Ok(response);
             }
             else
@@ -70,7 +71,7 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Message = newPromoChannel.Item2;
                 response.Success = false;
 
-                _logger.LogError(string.Format("Failed add_promotion_channel with params {0}", JsonConvert.SerializeObject(promotionChannel)));
+                _logger.LogError("Failed add_promotion_channel with params {msg}", msg);
                 return BadRequest(response);
             }
         }

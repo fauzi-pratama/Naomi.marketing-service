@@ -27,14 +27,12 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("getNipEntertain")]
         public async Task<ActionResult<ServiceResponse<List<NipEntertainResponse>>>> GetNipEntertain(DateTime? monthYear, string? searchName, int pageNo = 1, int pageSize = 10)
         {
+            ServiceResponse<List<NipEntertainResponse>> response = new();
             var nipEntertainList = await _entertainService.GetNipEntertain(monthYear, searchName, pageNo, pageSize);
-            ServiceResponse<List<NipEntertainResponse>> response = new()
-            {
-                Data = nipEntertainList.Item1
-            };
-
+            
             if (nipEntertainList != null && nipEntertainList.Item1.Count > 0)
             {
+                response.Data = nipEntertainList.Item1;
                 response.Pages = pageNo;
                 response.TotalPages = nipEntertainList.Item2;
                 return Ok(response);
@@ -49,12 +47,12 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpGet("getEntertainList")]
         public async Task<ActionResult<ServiceResponse<List<PromoEntertainListView>>>> GetEntertainList([FromQuery] PromotionListRequest promoRequest)
         {
-            var promoEntertainList = await _entertainService.GetPromoEntertainListAsync(promoRequest.OrderColumn!, promoRequest.OrderMethod!, promoRequest.PageNo, promoRequest.PageSize, promoRequest.Search);
             ServiceResponse<List<PromoEntertainListView>> response = new();
+            var promoEntertainList = await _entertainService.GetPromoEntertainListAsync(promoRequest.OrderColumn!, promoRequest.OrderMethod!, promoRequest.PageNo, promoRequest.PageSize, promoRequest.Search);
 
-            response.Data = promoEntertainList.Item1;
             if (promoEntertainList.Item1.Count > 0)
             {
+                response.Data = promoEntertainList.Item1;
                 response.Pages = promoRequest.PageNo;
                 response.TotalPages = promoEntertainList.Item2;
                 return Ok(response);
@@ -70,8 +68,8 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         public async Task<ActionResult<ServiceResponse<PromotionEntertain>>> GetEntertainByNip(string? empNIP, DateTime? monthYear)
         {
             ServiceResponse<PromotionEntertain> response = new();
-
             var promoEntertain = await _entertainService.GetPromoEntertainByNIP(empNIP, monthYear);
+
             if (promoEntertain != null && promoEntertain.Item1 != null && promoEntertain.Item1.Id != Guid.Empty)
             {
                 response.Data = promoEntertain.Item1;
@@ -91,18 +89,8 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         public async Task<ActionResult<ServiceResponse<Tuple<PromotionEntertain, string>>>> CreateEntertain([FromBody] CreateEntertain createEntertain)
         {
             ServiceResponse<PromotionEntertain> response = new();
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (createEntertain == null)
-            {
-                response.Message = "Please check your data again";
-                response.Success = false;
-                return BadRequest(response);
-            }
-
             var newEntertain = await _entertainService.CreateEntertain(createEntertain);
+
             if (newEntertain.Item1 != null && newEntertain.Item1.Id != Guid.Empty)
             {
                 response.Data = newEntertain.Item1;
@@ -119,9 +107,9 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
         [HttpPut("editEntertain")]
         public async Task<ActionResult<ServiceResponse<PromotionEntertain>>> UpdateEntertain([FromBody] UpdateEntertain updateEntertain)
         {
-            var entertainUpdated = await _entertainService.UpdateEntertain(updateEntertain);
             ServiceResponse<PromotionEntertain> response = new();
-
+            var entertainUpdated = await _entertainService.UpdateEntertain(updateEntertain);
+            
             if (entertainUpdated != null && entertainUpdated.Item1.Id != Guid.Empty)
             {
                 response.Data = entertainUpdated.Item1;

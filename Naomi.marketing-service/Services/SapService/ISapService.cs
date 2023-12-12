@@ -1,4 +1,5 @@
 ﻿using Naomi.marketing_service.Models.Entities;
+using Naomi.marketing_service.Models.Message.Consume;
 using Naomi.marketing_service.Models.Request;
 
 namespace Naomi.marketing_service.Services.SapService
@@ -15,6 +16,13 @@ namespace Naomi.marketing_service.Services.SapService
         Task<bool> GetCompany();
         Task<bool> GetSiteZoneSAP();
         Task<bool> GetMop();
+        #endregion
+
+        #region ConsumeSapData
+        Task InsertCompany(SiteMessage msg);
+        Task InsertSite(SiteMessage msg);
+        Task InsertZone(SiteMessage msg);
+        Task InsertMop(MopMessage msg);
         #endregion
     }
 }

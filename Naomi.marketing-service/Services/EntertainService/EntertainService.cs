@@ -11,6 +11,7 @@ using static Naomi.marketing_service.Models.Response.EntertainBudgetResponse;
 using System.Linq.Dynamic.Core;
 using System.Reflection.Metadata.Ecma335;
 using Amazon.S3.Model.Internal.MarshallTransformations;
+using Microsoft.AspNetCore.Identity;
 
 namespace Naomi.marketing_service.Services.EntertainService
 {
@@ -155,11 +156,15 @@ namespace Naomi.marketing_service.Services.EntertainService
                 StartDate = sDate,
                 EndDate = eDate,
                 EntertainBudget = promotionEntertain.EntertainBudget,
-                ActiveFlag = promotionEntertain.ActiveFlag ?? true
+                ActiveFlag = promotionEntertain.ActiveFlag ?? true,
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = promotionEntertain.Username,
+                UpdatedDate = DateTime.UtcNow,
+                UpdatedBy = promotionEntertain.Username
             };
 
 
-            entertainData.EmpEmails = SetPromoEntertainEmail(promotionEntertain!.EmpEmails!);
+            entertainData.EmpEmails = SetPromoEntertainEmail(promotionEntertain!.EmpEmails!, promotionEntertain.Username!);
             PromoEmailUser promoEmailUser = new()
             {
                 Nip = promotionEntertain.EmployeeNIP,
@@ -202,7 +207,9 @@ namespace Naomi.marketing_service.Services.EntertainService
             existingEntertain.StartDate = sDate;
             existingEntertain.EndDate = eDate;
             existingEntertain.ActiveFlag = updateEntertain.ActiveFlag ?? false;
-            existingEntertain.EmpEmails = SetPromoEntertainEmail(updateEntertain!.EmpEmails!);
+            existingEntertain.UpdatedDate = DateTime.UtcNow;
+            existingEntertain.UpdatedBy = updateEntertain.Username;
+            existingEntertain.EmpEmails = SetPromoEntertainEmail(updateEntertain!.EmpEmails!, updateEntertain.Username!);
 
             PromoEmailUser promoEmailUser = new()
             {
@@ -227,7 +234,7 @@ namespace Naomi.marketing_service.Services.EntertainService
             var msg = ValidateBudgetPeriod(monthYear);
             if (msg != "") return msg;
 
-            PromotionEntertain? dataExist = _dbContext.PromotionEntertain.Where(x => x.EmployeeNIP!.Trim().ToUpper() == promoEntertain.EmployeeNIP.Trim().ToUpper() && x.StartDate.HasValue && x.StartDate!.Value.Year == monthYear.Year && x.StartDate!.Value.Month == monthYear.Month).FirstOrDefault();
+            PromotionEntertain? dataExist = _dbContext.PromotionEntertain.Where(x => x.EmployeeNIP!.Trim().ToUpper() == promoEntertain.EmployeeNIP!.Trim().ToUpper() && x.StartDate.HasValue && x.StartDate!.Value.Year == monthYear.Year && x.StartDate!.Value.Month == monthYear.Month).FirstOrDefault();
             if (dataExist != null && dataExist.Id != Guid.Empty)
                 return string.Format("Data for {0} is already exist", promoEntertain.MonthYear.ToString("MMM yyyy"));
 
@@ -301,7 +308,7 @@ namespace Naomi.marketing_service.Services.EntertainService
         #endregion
 
         #region Others
-        public List<PromotionEntertainEmail> SetPromoEntertainEmail(List<EmpEmail> empEmails)
+        public List<PromotionEntertainEmail> SetPromoEntertainEmail(List<EmpEmail> empEmails, string? username)
         {
             List<PromotionEntertainEmail> newEmpEmails = new();
             foreach (var item in empEmails)
@@ -310,7 +317,11 @@ namespace Naomi.marketing_service.Services.EntertainService
                 {
                     Email = item.Email,
                     DefaultEmail = item.DefaultEmail,
-                    ActiveFlag = true
+                    ActiveFlag = true,
+                    CreatedDate = DateTime.UtcNow,
+                    CreatedBy = username,
+                    UpdatedDate = DateTime.UtcNow,
+                    UpdatedBy = username
                 });
             }
             return newEmpEmails;
@@ -332,6 +343,53 @@ namespace Naomi.marketing_service.Services.EntertainService
             return vTable.Where(x => x.EmployeeNIP!.Trim().ToUpper().Contains(searchVar)
                                   || x.EmployeeName!.Trim().ToUpper().Contains(searchVar)
                                   || x.JobPosition!.Trim().ToUpper().Contains(searchVar)).ToList();
+        }
+        #endregion
+
+        #region EntertainJob
+        public async Task CreateEntertainBudgetAuto()
+        {
+            DateTime currentPeriod = new(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+            DateTime currentPeriodEnd = currentPeriod.AddMonths(1);
+            currentPeriodEnd = currentPeriodEnd.AddDays(-1);
+            DateTime lastPeriod = currentPeriod.AddMonths(-1);
+
+            List<PromotionEntertain> prevBudgets = await _dbContext.PromotionEntertain.Include(p => p.EmpEmails)
+                                                                                      .Where(x => x.ActiveFlag && x.StartDate.HasValue && x.StartDate!.Value.Year == lastPeriod.Year && x.StartDate!.Value.Month == lastPeriod.Month).ToListAsync();
+
+            List<PromotionEntertain> newEntBudgets = new();
+            foreach (var budget in prevBudgets)
+            {
+                //check if exist
+                PromotionEntertain? currEntBudget = await _dbContext.PromotionEntertain.Where(x => x.EmployeeNIP == budget.EmployeeNIP && x.StartDate!.HasValue && x.StartDate!.Value.Year == currentPeriod.Year && x.StartDate!.Value.Month == currentPeriod.Month).FirstOrDefaultAsync();
+                if (currEntBudget == null)
+                {
+                    PromotionEntertain newBudget = new()
+                    {
+                        Id = Guid.NewGuid(),
+                        EmployeeNIP = budget.EmployeeNIP,
+                        EmployeeName = budget.EmployeeName,
+                        JobPosition = budget.JobPosition,
+                        StartDate = currentPeriod,
+                        EndDate = currentPeriodEnd,
+                        EntertainBudget = budget.EntertainBudget,
+                        ActiveFlag = true,
+                        CreatedDate = DateTime.UtcNow,
+                        CreatedBy = "ENTERTAINJOB",
+                        UpdatedDate = DateTime.UtcNow,
+                        UpdatedBy = "ENTERTAINJOB"
+                    };
+                    newBudget.EmpEmails = SetPromoEntertainEmail(_mapper.Map<List<EmpEmail>>(budget.EmpEmails!), "ENTERTAINJOB");
+
+                    newEntBudgets.Add(newBudget);
+                }
+            }
+
+            if (newEntBudgets.Count > 0)
+            {
+                _dbContext.PromotionEntertain.AddRange(newEntBudgets);
+                await _dbContext.SaveChangesAsync();
+            }
         }
         #endregion
     }

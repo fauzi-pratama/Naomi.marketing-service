@@ -30,6 +30,7 @@
         public Guid PromotionHeaderId { get; set; } = Guid.Empty;
         public Guid CompanyId { get; set; } = Guid.Empty;
         public string? CompanyCode { get; set; }
+        public string? Username { get; set; }
     }
 
     public class ApproveRejectPromotion
