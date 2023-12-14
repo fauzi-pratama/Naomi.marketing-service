@@ -225,7 +225,7 @@ namespace Naomi.marketing_service.Services.ApprovalService
 
             if (request.CompanyId != Guid.Empty)
             {
-                approvalMapping = await _dbContext.ApprovalMapping.Where(x => x.CompanyId == request.CompanyId && x.ActiveFlag).FirstOrDefaultAsync() ?? new ApprovalMapping();
+                approvalMapping = await _dbContext.ApprovalMapping.Where(x => x.ActiveFlag && x.CompanyId == request.CompanyId && x.ActiveFlag).FirstOrDefaultAsync() ?? new ApprovalMapping();
                 if (approvalMapping == null || approvalMapping.Id == Guid.Empty)
                     return promoApprovals;
 

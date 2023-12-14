@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Naomi.marketing_service.Models.Entities;
 using Naomi.marketing_service.Models.Request;
@@ -12,6 +13,7 @@ using static Naomi.marketing_service.Models.Request.PromotionTypeRequest;
 
 namespace Naomi.marketing_service.Controllers.RestApi.v1
 {
+    [Authorize]
     [Route("/v1/")]
     [ApiController]
     public class PromoChannelController : ControllerBase
@@ -28,8 +30,10 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
 
         #region GetData
         [HttpGet("get_promotion_channel")]
-        public async Task<ActionResult<ServiceResponse<List<PromotionChannel>>>> GetPromotionChannel(string? searchName, int pageNo = 1, int pageSize = 10)
+        public async Task<ActionResult<ServiceResponse<List<PromotionChannel>>>> GetPromotionChannelAsync(string? searchName, int pageNo = 1, int pageSize = 10)
         {
+            _logger.LogInformation("Calling get_promotion_channel with search name: {searchName}", searchName);
+
             ServiceResponse<List<PromotionChannel>> response = new();
             var promoChannels = await _promoChannelService.GetPromotionChannel(searchName!, pageNo, pageSize);
 
@@ -38,23 +42,25 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Data = promoChannels.Item1;
                 response.Pages = pageNo;
                 response.TotalPages = promoChannels.Item2;
+
+                _logger.LogInformation("Success get_promotion_channel with search name: {searchName}", searchName);
                 return Ok(response);
             }
-            else
-            {
-                response.Message = "Data not found";
-                response.Success = false;
-                return NotFound(response);
-            }
+
+            response.Message = "Data not found";
+            response.Success = false;
+
+            _logger.LogInformation("Failed get_promotion_channel with search name: {searchName}", searchName);
+            return NotFound(response);
         }
         #endregion
 
         #region InsertData
         [HttpPost("add_promotion_channel")]
-        public async Task<ActionResult<ServiceResponse<PromotionChannel>>> AddPromotionChannel([FromBody] PromoChannelRequest promotionChannel)
+        public async Task<ActionResult<ServiceResponse<PromotionChannel>>> AddPromotionChannelAsync([FromBody] PromoChannelRequest promotionChannel)
         {
-            var msg = JsonConvert.SerializeObject(promotionChannel);
-            _logger.LogInformation("Calling add_promotion_channel with params {msg}", msg);
+            var param = JsonConvert.SerializeObject(promotionChannel);
+            _logger.LogInformation("Calling add_promotion_channel with params: {param}", param);
 
             ServiceResponse<PromotionChannel> response = new();
             var newPromoChannel = await _promoChannelService.InsertPromotionChannel(_mapper.Map<PromotionChannel>(promotionChannel));
@@ -63,17 +69,16 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
             {
                 response.Data = newPromoChannel.Item1;
 
-                _logger.LogInformation("Success add_promotion_channel with params {msg}", msg);
+                _logger.LogInformation("Success add_promotion_channel with params: {param}", param);
                 return Ok(response);
             }
-            else
-            {
-                response.Message = newPromoChannel.Item2;
-                response.Success = false;
 
-                _logger.LogError("Failed add_promotion_channel with params {msg}", msg);
-                return BadRequest(response);
-            }
+            var msg = newPromoChannel.Item2;
+            response.Message = msg;
+            response.Success = false;
+
+            _logger.LogError("Failed add_promotion_channel with message: {msg} and params: {param}", msg, param);
+            return BadRequest(response);
         }
         #endregion
     }

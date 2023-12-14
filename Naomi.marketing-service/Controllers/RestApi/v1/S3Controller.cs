@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Naomi.marketing_service.Models.Response;
 using Naomi.marketing_service.Services.S3Service;
 
 namespace Naomi.marketing_service.Controllers.RestApi.v1
 {
+    [Authorize]
     [Route("/v1/")]
     [ApiController]
     public class S3Controller : ControllerBase

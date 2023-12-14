@@ -23,9 +23,16 @@ using Naomi.marketing_service.Services.SapService;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text;
+using VaultSharp.Extensions.Configuration;
 
 //config App
 var builder = WebApplication.CreateBuilder(args);
+
+//Config Vault
+VaultConfig? vaultConfig = builder.Configuration.GetSection("Vault").Get<VaultConfig>();
+builder.Configuration.AddJsonFile("appsettings.json").AddVaultConfiguration(() =>
+    new VaultOptions(vaultAddress: vaultConfig.Link!, vaultToken: vaultConfig.Token), vaultConfig.BasePath!, vaultConfig.MountPoint!);
 
 //Config Env
 builder.Services.Configure<AppConfig>(builder.Configuration);
@@ -35,16 +42,6 @@ AppConfig? appConfig = builder.Configuration.Get<AppConfig>();
 builder.Services.AddDbContext<DataDbContext>(options => {
     options.UseNpgsql(appConfig.PostgreSqlConnectionString!);
 });
-
-//Config Fluent Validation
-builder.Services.AddControllers().AddFluentValidation(options => {
-    options.ImplicitlyValidateChildProperties = true;
-    options.ImplicitlyValidateRootCollectionElements = true;
-    options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-});
-
-//Config Automapper
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 //Config Cap Kafka
 builder.Services.AddCap(x =>
@@ -156,6 +153,7 @@ app.UseSwaggerUI(c => {
 app.UseHttpsRedirection();
 
 //Run Auth
+app.UseAuthentication();
 app.UseAuthorization();
 
 //Run Contoller

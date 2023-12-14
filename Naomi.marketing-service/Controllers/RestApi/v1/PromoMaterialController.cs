@@ -7,9 +7,11 @@ using Naomi.marketing_service.Services.PromoChannelService;
 using Naomi.marketing_service.Services.PromoMaterialService;
 using static Naomi.marketing_service.Models.Request.ChannelMaterialRequest;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Naomi.marketing_service.Controllers.RestApi.v1
 {
+    [Authorize]
     [Route("/v1/")]
     [ApiController]
     public class PromoMaterialController : ControllerBase
@@ -26,8 +28,10 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
 
         #region GetData
         [HttpGet("get_promotion_material")]
-        public async Task<ActionResult<ServiceResponse<List<PromotionMaterial>>>> GetPromotionMaterial(string? searchName, int pageNo = 1, int pageSize = 10)
+        public async Task<ActionResult<ServiceResponse<List<PromotionMaterial>>>> GetPromotionMaterialAsync(string? searchName, int pageNo = 1, int pageSize = 10)
         {
+            _logger.LogInformation("Calling get_promotion_material with Search name: {searchName}", searchName);
+
             ServiceResponse<List<PromotionMaterial>> response = new();
             var promoMaterials = await _promoMaterialService.GetPromotionMaterial(searchName, pageNo, pageSize);
 
@@ -36,23 +40,25 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
                 response.Data = promoMaterials.Item1;
                 response.Pages = pageNo;
                 response.TotalPages = promoMaterials.Item2;
+
+                _logger.LogInformation("Success get_promotion_material with Search name: {searchName}", searchName);
                 return Ok(response);
             }
-            else
-            {
-                response.Message = "Data not found";
-                response.Success = false;
-                return NotFound(response);
-            }
+
+            response.Message = "Data not found";
+            response.Success = false;
+
+            _logger.LogInformation("Failed get_promotion_material with Search name: {searchName}", searchName);
+            return NotFound(response);
         }
         #endregion
 
         #region InsertData
         [HttpPost("add_promotion_material")]
-        public async Task<ActionResult<ServiceResponse<PromotionMaterial>>> AddPromotionMaterial([FromBody] PromoMaterialRequest promotionMaterial)
+        public async Task<ActionResult<ServiceResponse<PromotionMaterial>>> AddPromotionMaterialAsync([FromBody] PromoMaterialRequest promotionMaterial)
         {
-            var msg = JsonConvert.SerializeObject(promotionMaterial);
-            _logger.LogInformation("Calling add_promotion_material with params {msg}", msg);
+            var param = JsonConvert.SerializeObject(promotionMaterial);
+            _logger.LogInformation("Calling add_promotion_material with params: {param}", param);
 
             ServiceResponse<PromotionMaterial> response = new();
             var newPromoMaterial = await _promoMaterialService.InsertPromotionMaterial(_mapper.Map<PromotionMaterial>(promotionMaterial));
@@ -61,17 +67,15 @@ namespace Naomi.marketing_service.Controllers.RestApi.v1
             {
                 response.Data = newPromoMaterial.Item1;
 
-                _logger.LogInformation("Success add_promotion_material with params {msg}", msg);
+                _logger.LogInformation("Success add_promotion_material with params: {param}", param);
                 return Ok(response);
             }
-            else
-            {
-                response.Message = newPromoMaterial.Item2;
-                response.Success = false;
 
-                _logger.LogError("Failed add_promotion_material with params {msg}", msg);
-                return BadRequest(response);
-            }
+            response.Message = newPromoMaterial.Item2;
+            response.Success = false;
+
+            _logger.LogError("Failed add_promotion_material with params: {param}", param);
+            return BadRequest(response);
         }
         #endregion
     }

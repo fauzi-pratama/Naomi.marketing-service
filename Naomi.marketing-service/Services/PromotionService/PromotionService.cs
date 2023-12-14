@@ -601,7 +601,7 @@ namespace Naomi.marketing_service.Services.PromotionService
 
             if (!isGenerateApproval && promotionHeader.Username!.Trim().ToUpper() != "ENTERTAINJOB" && promotionHeader.Username!.Trim().ToUpper() != "WAWA")
             {
-                await PublishPromoMessage("Create", header, ruleRequirements, ruleResults, ruleMops);
+                await PublishPromoMessageAsync("Create", header, ruleRequirements, ruleResults, ruleMops);
             }
 
             return new Tuple<PromotionHeader, string>(header, "data has been saved");
@@ -613,7 +613,7 @@ namespace Naomi.marketing_service.Services.PromotionService
         {
             PromotionHeader updatedPromoHeader = await GetPromotionByIdAsync(promotionHeader.Id);
 
-            string msg = await ValidateUpdatePromo(updatedPromoHeader, promotionHeader);
+            string msg = await ValidateUpdatePromoAsync(updatedPromoHeader, promotionHeader);
             if (msg != "")
                 return new Tuple<PromotionHeader, string>(new PromotionHeader(), msg);
 
@@ -803,7 +803,7 @@ namespace Naomi.marketing_service.Services.PromotionService
                 && updatedPromoHeader.Username!.Trim().ToUpper() != "WAWA")
             {
                 //message class promoUpdated
-                await PublishPromoMessage("Update", updatedPromoHeader, ruleRequirements, ruleResults, new List<PromotionRuleMopGroup>());
+                await PublishPromoMessageAsync("Update", updatedPromoHeader, ruleRequirements, ruleResults, new List<PromotionRuleMopGroup>());
             }
 
             return new Tuple<PromotionHeader, string>(updatedPromoHeader, "data has been updated");
@@ -811,7 +811,7 @@ namespace Naomi.marketing_service.Services.PromotionService
         #endregion
 
         #region PromoMessage
-        public async Task<Object> GetPromoMessage(string CreateUpdate, PromotionHeader promoHeader, List<PromotionRuleRequirement> promoRuleReqs, List<PromotionRuleResult> promoRuleResults, List<PromotionRuleMopGroup> promoRuleMops)
+        public async Task<Object> GetPromoMessageAsync(string CreateUpdate, PromotionHeader promoHeader, List<PromotionRuleRequirement> promoRuleReqs, List<PromotionRuleResult> promoRuleResults, List<PromotionRuleMopGroup> promoRuleMops)
         {
             var promoMessage = new PromoCreated();
 
@@ -993,9 +993,9 @@ namespace Naomi.marketing_service.Services.PromotionService
             }
             return mopList;
         }
-        public async Task PublishPromoMessage(string CreateUpdate, PromotionHeader promotionHeader, List<PromotionRuleRequirement> ruleRequirements, List<PromotionRuleResult> ruleResults, List<PromotionRuleMopGroup> ruleMops)
+        public async Task PublishPromoMessageAsync(string CreateUpdate, PromotionHeader promotionHeader, List<PromotionRuleRequirement> ruleRequirements, List<PromotionRuleResult> ruleResults, List<PromotionRuleMopGroup> ruleMops)
         {
-            PromoCreated promoCreated = (PromoCreated)await GetPromoMessage(CreateUpdate, promotionHeader, ruleRequirements, ruleResults, ruleMops);
+            PromoCreated promoCreated = (PromoCreated)await GetPromoMessageAsync(CreateUpdate, promotionHeader, ruleRequirements, ruleResults, ruleMops);
             _pubService.SendPromoCreatedMessage(promoCreated, "Create");
         }
         #endregion
@@ -1057,7 +1057,7 @@ namespace Naomi.marketing_service.Services.PromotionService
                 List<PromotionRuleRequirement> promoRuleReqs = await _dbContext.PromotionRuleRequirement.Where(x => x.PromotionHeaderId == promoId).ToListAsync() ?? new List<PromotionRuleRequirement>();
                 List<PromotionRuleResult> promoRuleResults = await _dbContext.PromotionRuleResult.Where(x => x.PromotionHeaderId == promoId).ToListAsync() ?? new List<PromotionRuleResult>();
                 List<PromotionRuleMopGroup> promoRuleMops = await _dbContext.PromotionRuleMopGroup.Where(x => x.PromotionHeaderId == promoId).ToListAsync() ?? new List<PromotionRuleMopGroup>();
-                promoUpdated = (PromoUpdated)await GetPromoMessage("Update", updatedPromoHeader, promoRuleReqs, promoRuleResults, promoRuleMops);
+                promoUpdated = (PromoUpdated)await GetPromoMessageAsync("Update", updatedPromoHeader, promoRuleReqs, promoRuleResults, promoRuleMops);
                 needToPublish = true;
             }
 
@@ -1177,7 +1177,7 @@ namespace Naomi.marketing_service.Services.PromotionService
                 //publish event to promotionService
                 if (isFinalApprove)
                 {
-                    promoCreated = (PromoCreated)await GetPromoMessage("Create", promoHeader, promoHeader.PromoRuleRequirements ?? new List<PromotionRuleRequirement>(), promoHeader.PromoRuleResults ?? new List<PromotionRuleResult>(), promoHeader.PromoRuleMops ?? new List<PromotionRuleMopGroup>());
+                    promoCreated = (PromoCreated)await GetPromoMessageAsync("Create", promoHeader, promoHeader.PromoRuleRequirements ?? new List<PromotionRuleRequirement>(), promoHeader.PromoRuleResults ?? new List<PromotionRuleResult>(), promoHeader.PromoRuleMops ?? new List<PromotionRuleMopGroup>());
                     _pubService.SendPromoCreatedMessage(promoCreated, "Create");
                 }
 
@@ -1362,7 +1362,7 @@ namespace Naomi.marketing_service.Services.PromotionService
 
             return "";
         }
-        public async Task<string> ValidateUpdatePromo(PromotionHeader updatedPromoHeader, UpdatePromotion request)
+        public async Task<string> ValidateUpdatePromoAsync(PromotionHeader updatedPromoHeader, UpdatePromotion request)
         {
             if (updatedPromoHeader == null || updatedPromoHeader.Id == Guid.Empty)
                 return string.Concat("Promotion id: ", request.Id, " is not found");
@@ -1515,7 +1515,7 @@ namespace Naomi.marketing_service.Services.PromotionService
                 if (promoHeader != null && promoHeader.Id != Guid.Empty && promoHeader.EndDate.ToString("yyyyMM") != DateTime.UtcNow.ToString("yyyyMM"))
                 {
                     var startDate = DateTime.Today;
-                    var endDate = new DateTime(startDate.Year, startDate.Month, 1); //DateTime.Today.AddMonths(1);
+                    var endDate = new DateTime(startDate.Year, startDate.Month, 1);
                     endDate = endDate.AddMonths(1);
                     endDate = endDate.AddDays(-1);
 
@@ -1549,7 +1549,7 @@ namespace Naomi.marketing_service.Services.PromotionService
                                                                               .FirstOrDefaultAsync() ?? new PromotionHeader();
                 if (promoHeader != null && promoHeader.Id != Guid.Empty && promoHeader.EndDate.ToString("yyyyMM") == DateTime.UtcNow.ToString("yyyyMM") && promoHeader.CreatedBy!.Trim().ToUpper() == "ENTERTAINJOB")
                 {
-                    await PublishPromoMessage("Create", promoHeader, promoHeader.PromoRuleRequirements!, promoHeader.PromoRuleResults!, promoHeader.PromoRuleMops!);
+                    await PublishPromoMessageAsync("Create", promoHeader, promoHeader.PromoRuleRequirements!, promoHeader.PromoRuleResults!, promoHeader.PromoRuleMops!);
                 }
             }
         }
